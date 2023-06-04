@@ -85,7 +85,7 @@ public class DerrickPeripheral extends PoweredMultiblockPeripheral{
 		for(ColumnPos cPos:well.tappedIslands){
 			ReservoirIsland island = ReservoirHandler.getIsland(this.master.getLevelNonnull(), cPos);
 			if(island != null){
-				float pressure = island.getPressure(this.master.getLevelNonnull(), cPos.x, cPos.z);
+				float pressure = island.getPressure(this.master.getLevelNonnull(), cPos.x(), cPos.z());
 				if(highest < pressure){
 					highest = pressure;
 				}
@@ -107,7 +107,7 @@ public class DerrickPeripheral extends PoweredMultiblockPeripheral{
 		for(ColumnPos cPos:well.tappedIslands){
 			ReservoirIsland island = ReservoirHandler.getIsland(this.master.getLevelNonnull(), cPos);
 			if(island != null){
-				float pressure = island.getPressure(this.master.getLevelNonnull(), cPos.x, cPos.z);
+				float pressure = island.getPressure(this.master.getLevelNonnull(), cPos.x(), cPos.z());
 				totalFlowrate += ReservoirIsland.getFlow(pressure);
 			}
 		}

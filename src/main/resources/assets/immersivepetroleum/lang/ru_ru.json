@@ -23,12 +23,12 @@
 	"block.immersivepetroleum.cokerunit": "Установка для коксования",
 	"block.immersivepetroleum.hydrotreater": "Установка для извлечения серы",
 	
-	"fluid.immersivepetroleum.diesel": "Дизельное топливо",
-	"fluid.immersivepetroleum.diesel_sulfur": "Сернистое дизельное топливо",
-	"fluid.immersivepetroleum.crudeoil": "Нефть",
-	"fluid.immersivepetroleum.lubricant": "Смазка",
-	"fluid.immersivepetroleum.gasoline": "Бензин",
-	"fluid.immersivepetroleum.napalm": "Напалм",
+	"fluid_type.immersivepetroleum.diesel": "Дизельное топливо",
+	"fluid_type.immersivepetroleum.diesel_sulfur": "Сернистое дизельное топливо",
+	"fluid_type.immersivepetroleum.crudeoil": "Нефть",
+	"fluid_type.immersivepetroleum.lubricant": "Смазка",
+	"fluid_type.immersivepetroleum.gasoline": "Бензин",
+	"fluid_type.immersivepetroleum.napalm": "Напалм",
 	
 	"_comment": "################## Items ##################",
 	

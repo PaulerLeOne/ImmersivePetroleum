@@ -22,11 +22,8 @@ import net.minecraft.world.entity.player.Inventory;
 public class DistillationTowerScreen extends IEContainerScreen<DistillationTowerContainer>{
 	static final ResourceLocation GUI_TEXTURE = ResourceUtils.ip("textures/gui/distillation.png");
 	
-	DistillationTowerTileEntity tile;
-	
 	public DistillationTowerScreen(DistillationTowerContainer container, Inventory playerInventory, Component title){
 		super(container, playerInventory, title, GUI_TEXTURE);
-		this.tile = container.tile;
 	}
 	
 	@Override
@@ -38,9 +35,9 @@ public class DistillationTowerScreen extends IEContainerScreen<DistillationTower
 	@Override
 	protected List<InfoArea> makeInfoAreas(){
 		return List.of(
-				new FluidInfoArea(tile.tanks[0], new Rect2i(leftPos + 62, topPos + 21, 16, 47), 177, 31, 20, 51, GUI_TEXTURE),
-				new EnergyInfoArea(leftPos + 158, topPos + 22, tile.energyStorage),
-				new MultitankArea(new Rect2i(leftPos + 112, topPos + 21, 16, 47), tile.tanks[1])
+				new FluidInfoArea(menu.tanks[0], new Rect2i(leftPos + 62, topPos + 21, 16, 47), 177, 31, 20, 51, GUI_TEXTURE),
+				new EnergyInfoArea(leftPos + 158, topPos + 22, menu.energyStorage),
+				new MultitankArea(new Rect2i(leftPos + 112, topPos + 21, 16, 47), DistillationTowerTileEntity.TANK_VOLUME, ()->menu.tanks[1].fluids)
 		);
 	}
 }

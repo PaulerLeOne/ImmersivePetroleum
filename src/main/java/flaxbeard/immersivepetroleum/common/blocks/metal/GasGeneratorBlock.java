@@ -3,8 +3,8 @@ package flaxbeard.immersivepetroleum.common.blocks.metal;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces;
 import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.IPlayerInteraction;
-import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.IReadOnPlacement;
 import flaxbeard.immersivepetroleum.common.IPTileTypes;
 import flaxbeard.immersivepetroleum.common.blocks.IPBlockBase;
 import flaxbeard.immersivepetroleum.common.blocks.tileentities.GasGeneratorTileEntity;
@@ -93,17 +93,19 @@ public class GasGeneratorBlock extends IPBlockBase implements EntityBlock{
 		}
 		return InteractionResult.FAIL;
 	}
-	
+
 	@Override
-	public void setPlacedBy(Level worldIn, @Nonnull BlockPos pos, @Nonnull BlockState state, LivingEntity placer, @Nonnull ItemStack stack){
+	public void onIPBlockPlacedBy(BlockPlaceContext context, BlockState state) {
+		Level worldIn = context.getLevel();
+		BlockPos pos = context.getClickedPos();
 		if(!worldIn.isClientSide){
 			BlockEntity te = worldIn.getBlockEntity(pos);
-			if(te instanceof IReadOnPlacement read){
-				read.readOnPlacement(placer, stack);
+			if(te instanceof IEBlockInterfaces.IPlacementInteraction placementInteraction){
+				placementInteraction.onBEPlaced(context);
 			}
 		}
 	}
-	
+
 	@Override
 	public BlockState getStateForPlacement(BlockPlaceContext context){
 		return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());

@@ -10,7 +10,6 @@ import flaxbeard.immersivepetroleum.common.cfg.IPServerConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
@@ -38,7 +37,7 @@ public class AsphaltBlock extends IPBlockBase{
 	
 	static void tooltip(ItemStack stack, BlockGetter worldIn, List<Component> tooltip, TooltipFlag flagIn){
 		if(IPServerConfig.MISCELLANEOUS.asphalt_speed.get()){
-			MutableComponent out = new TranslatableComponent("desc.immersivepetroleum.flavour.asphalt", String.format(Locale.ENGLISH, "%.1f%%", (SPEED_FACTOR * 100 - 100))).withStyle(ChatFormatting.GRAY);
+			MutableComponent out = Component.translatable("desc.immersivepetroleum.flavour.asphalt", String.format(Locale.ENGLISH, "%.1f%%", (SPEED_FACTOR * 100 - 100))).withStyle(ChatFormatting.GRAY);
 			
 			tooltip.add(out);
 		}

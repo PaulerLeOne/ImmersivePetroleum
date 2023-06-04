@@ -159,7 +159,7 @@ public class SeismicSurveyTileEntity extends IPTileEntityBase implements IPCommo
 				}else{
 					SoundEvent sound = ((BulletItem) ExternalModContent.getIEItem_Buckshot()).getType().getSound();
 					if(sound == null){
-						sound = IESounds.revolverFire;
+						sound = IESounds.revolverFire.get();
 					}
 					
 					final double bX = (pos.getX() + 0.5);

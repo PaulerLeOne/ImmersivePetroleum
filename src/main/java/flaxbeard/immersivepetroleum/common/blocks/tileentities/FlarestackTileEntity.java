@@ -26,9 +26,9 @@ import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
@@ -85,7 +85,7 @@ public class FlarestackTileEntity extends IPTileEntityBase implements IPCommonTi
 	@Override
 	@Nonnull
 	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, Direction side){
-		if(cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY){
+		if(cap == ForgeCapabilities.FLUID_HANDLER){
 			if(side == null || side == Direction.DOWN){
 				BlockEntity te = this.level.getBlockEntity(getBlockPos());
 				if(te instanceof FlarestackTileEntity flare){

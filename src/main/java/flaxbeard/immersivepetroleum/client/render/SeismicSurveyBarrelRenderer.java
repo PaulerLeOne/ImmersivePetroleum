@@ -5,10 +5,12 @@ import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 
+import blusunrize.immersiveengineering.api.ApiUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.PoseStack.Pose;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
+import flaxbeard.immersivepetroleum.client.model.IPModels;
 import flaxbeard.immersivepetroleum.client.utils.MCUtil;
 import flaxbeard.immersivepetroleum.common.blocks.tileentities.SeismicSurveyTileEntity;
 import flaxbeard.immersivepetroleum.common.util.ResourceUtils;
@@ -18,8 +20,7 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.model.ForgeModelBakery;
-import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.client.model.data.ModelData;
 
 public class SeismicSurveyBarrelRenderer implements BlockEntityRenderer<SeismicSurveyTileEntity>{
 	
@@ -28,7 +29,7 @@ public class SeismicSurveyBarrelRenderer implements BlockEntityRenderer<SeismicS
 	
 	/* Called from ClientProxy during ModelRegistryEvent */
 	public static void init(){
-		ForgeModelBakery.addSpecialModel(BARREL);
+		IPModels.EXTRA_MODELS.add(BARREL);
 	}
 	
 	@Override
@@ -49,7 +50,7 @@ public class SeismicSurveyBarrelRenderer implements BlockEntityRenderer<SeismicS
 			
 			matrix.translate(0, -0.125 * (1 - d), 0);
 			
-			List<BakedQuad> quads = f.apply(BARREL).getQuads(null, null, null, EmptyModelData.INSTANCE);
+			List<BakedQuad> quads = f.apply(BARREL).getQuads(null, null, ApiUtils.RANDOM_SOURCE, ModelData.EMPTY, RenderType.solid());
 			Pose last = matrix.last();
 			VertexConsumer solid = buffer.getBuffer(RenderType.solid());
 			for(BakedQuad quad:quads){

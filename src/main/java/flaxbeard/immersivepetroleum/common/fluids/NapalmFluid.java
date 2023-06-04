@@ -18,11 +18,11 @@ import net.minecraft.world.level.material.Material;
 
 public class NapalmFluid extends IPFluid{
 	public NapalmFluid(IPFluidEntry entry){
-		super(entry, 1000, 4000, false);
+		super(entry);
 	}
 	
 	public static IPFluidEntry makeFluid(){
-		return makeFluid("napalm", NapalmFluid::new, e -> new IPFluidBlock(e){
+		return makeFluid("napalm", NapalmFluid::new, IPFluid.createBuilder(1000, 4000), e -> new IPFluidBlock(e){
 			@Override
 			public void onPlace(@Nonnull BlockState state, @Nonnull Level worldIn, @Nonnull BlockPos pos, @Nonnull BlockState oldState, boolean isMoving){
 				for(Direction facing:Direction.values()){

@@ -13,6 +13,8 @@ import blusunrize.immersiveengineering.common.blocks.MultiblockBEType;
 import flaxbeard.immersivepetroleum.ImmersivePetroleum;
 import flaxbeard.immersivepetroleum.common.blocks.IPBlockBase;
 import flaxbeard.immersivepetroleum.common.util.IPEffects.IPEffect;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -25,6 +27,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -33,14 +36,18 @@ public class IPRegisters{
 	private static final DeferredRegister<Block> BLOCK_REGISTER = DeferredRegister.create(ForgeRegistries.BLOCKS, ImmersivePetroleum.MODID);
 	private static final DeferredRegister<Item> ITEM_REGISTER = DeferredRegister.create(ForgeRegistries.ITEMS, ImmersivePetroleum.MODID);
 	private static final DeferredRegister<Fluid> FLUID_REGISTER = DeferredRegister.create(ForgeRegistries.FLUIDS, ImmersivePetroleum.MODID);
-	private static final DeferredRegister<BlockEntityType<?>> TE_REGISTER = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, ImmersivePetroleum.MODID);
-	private static final DeferredRegister<EntityType<?>> ENTITY_REGISTER = DeferredRegister.create(ForgeRegistries.ENTITIES, ImmersivePetroleum.MODID);
-	private static final DeferredRegister<MenuType<?>> MENU_REGISTER = DeferredRegister.create(ForgeRegistries.CONTAINERS, ImmersivePetroleum.MODID);
+	private static final DeferredRegister<FluidType> FLUID_TYPE_REGISTER = DeferredRegister.create(ForgeRegistries.Keys.FLUID_TYPES, ImmersivePetroleum.MODID);
+	private static final DeferredRegister<BlockEntityType<?>> TE_REGISTER = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, ImmersivePetroleum.MODID);
+	private static final DeferredRegister<EntityType<?>> ENTITY_REGISTER = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, ImmersivePetroleum.MODID);
+	private static final DeferredRegister<MenuType<?>> MENU_REGISTER = DeferredRegister.create(ForgeRegistries.MENU_TYPES, ImmersivePetroleum.MODID);
 	private static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, ImmersivePetroleum.MODID);
 	private static final DeferredRegister<MobEffect> MOB_EFFECT = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, ImmersivePetroleum.MODID);
-	
+	private static final DeferredRegister<ParticleType<?>> PARTICLE_REGISTER = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, ImmersivePetroleum.MODID);
+	private static  DeferredRegister<SoundEvent> SOUND_REGISTER = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, ImmersivePetroleum.MODID);
+
 	public static void addRegistersToEventBus(IEventBus eventBus){
 		FLUID_REGISTER.register(eventBus);
+		FLUID_TYPE_REGISTER.register(eventBus);
 		BLOCK_REGISTER.register(eventBus);
 		ITEM_REGISTER.register(eventBus);
 		TE_REGISTER.register(eventBus);
@@ -48,6 +55,8 @@ public class IPRegisters{
 		MENU_REGISTER.register(eventBus);
 		RECIPE_SERIALIZERS.register(eventBus);
 		MOB_EFFECT.register(eventBus);
+		PARTICLE_REGISTER.register(eventBus);
+		SOUND_REGISTER.register(eventBus);
 	}
 	
 	public static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> blockConstructor){
@@ -81,7 +90,9 @@ public class IPRegisters{
 	public static <T extends Fluid> RegistryObject<T> registerFluid(String name, Supplier<T> fluidConstructor){
 		return FLUID_REGISTER.register(name, fluidConstructor);
 	}
-	
+
+	public static  <T extends FluidType> RegistryObject<T> registerFluidType(String name, Supplier<T> fluidTypeConstructot){ return FLUID_TYPE_REGISTER.register(name, fluidTypeConstructot); }
+
 	public static <T extends Fluid> RegistryObject<T> registerFlowingFluid(String name, Supplier<T> fluidConstructor){
 		return FLUID_REGISTER.register(name, fluidConstructor);
 	}
@@ -108,6 +119,14 @@ public class IPRegisters{
 	
 	public static <T extends IPEffect> RegistryObject<T> registerMobEffect(String name, Supplier<T> constructor){
 		return MOB_EFFECT.register(name, constructor);
+	}
+
+	public static <T extends ParticleType<?>> RegistryObject<T> registerParticle(String name, Supplier<T> particleConstructor){
+		return PARTICLE_REGISTER.register(name, particleConstructor);
+	}
+
+	public static <T extends SoundEvent> RegistryObject<T> registerSound(String name, Supplier<T> constructor){
+		return SOUND_REGISTER.register(name, constructor);
 	}
 	
 	private IPRegisters(){

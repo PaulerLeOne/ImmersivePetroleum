@@ -17,7 +17,6 @@ import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfigur
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraftforge.common.world.BiomeGenerationSettingsBuilder;
-import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.DeferredRegister;
@@ -39,14 +38,16 @@ public class IPWorldGen{
 		Holder<PlacedFeature> reservoirFeature = register(ResourceUtils.ip("reservoir"), RESERVOIR_FEATURE, new NoneFeatureConfiguration());
 		features.put("reservoirs", reservoirFeature);
 	}
-	
-	@SubscribeEvent
+
+	//Used biome-modifiers, this is a new forge features for adding world feature and other things data-driven
+
+	/*@SubscribeEvent
 	public void onBiomeLoad(BiomeLoadingEvent event){
 		BiomeGenerationSettingsBuilder generation = event.getGeneration();
 		for(Entry<String, Holder<PlacedFeature>> entry:features.entrySet()){
 			generation.addFeature(Decoration.UNDERGROUND_ORES, entry.getValue());
 		}
-	}
+	}*/
 	
 	private static <Cfg extends FeatureConfiguration, F extends Feature<Cfg>> Holder<PlacedFeature> register(ResourceLocation rl, RegistryObject<F> feature, Cfg cfg){
 		Holder<ConfiguredFeature<?, ?>> configured = BuiltinRegistries.register(BuiltinRegistries.CONFIGURED_FEATURE, rl, new ConfiguredFeature<>(feature.get(), cfg));

@@ -17,7 +17,7 @@ import flaxbeard.immersivepetroleum.common.blocks.IPBlockItemBase;
 import flaxbeard.immersivepetroleum.common.blocks.tileentities.FlarestackTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -100,7 +100,7 @@ public class FlarestackBlock extends IPBlockBase implements EntityBlock{
 				if(te instanceof FlarestackTileEntity flare){
 					flare.invertRedstone();
 					
-					ChatUtils.sendServerNoSpamMessages(player, new TranslatableComponent(Lib.CHAT_INFO + "rsControl." + (flare.isRedstoneInverted() ? "invertedOn" : "invertedOff")));
+					ChatUtils.sendServerNoSpamMessages(player, Component.translatable(Lib.CHAT_INFO + "rsControl." + (flare.isRedstoneInverted() ? "invertedOn" : "invertedOff")));
 				}
 			}
 			

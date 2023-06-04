@@ -17,8 +17,9 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidType;
 
 @OnlyIn(Dist.CLIENT)
 public class FluidSpill extends TextureSheetParticle{
@@ -37,13 +38,13 @@ public class FluidSpill extends TextureSheetParticle{
 		this.ogMotionY = motionY;
 		this.ogMotionZ = motionZ;
 		
-		FluidStack fs = new FluidStack(fluid, FluidAttributes.BUCKET_VOLUME);
+		FluidStack fs = new FluidStack(fluid, FluidType.BUCKET_VOLUME);
 		
-		ResourceLocation location = fluid.getAttributes().getStillTexture(fs);
+		ResourceLocation location = IClientFluidTypeExtensions.of(fluid).getStillTexture();
 		TextureAtlasSprite sprite = Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS).getSprite(location);
 		setSprite(sprite);
 		
-		int argb = fluid.getAttributes().getColor(fs);
+		int argb = IClientFluidTypeExtensions.of(fluid).getTintColor();
 		this.alpha = ((argb >> 24) & 255) / 255F;
 		this.rCol = ((argb >> 16) & 255) / 255F;
 		this.gCol = ((argb >> 8 & 255)) / 255F;
