@@ -119,7 +119,7 @@ public class LubricatedHandler{
 			tag.putInt("y", this.pos.getY());
 			tag.putInt("z", this.pos.getZ());
 			tag.putString("world", this.world.location().toString());
-			tag.putString("lubricant", this.lubricant.getRegistryName().toString());
+			tag.putString("lubricant", ForgeRegistries.FLUIDS.getKey(this.lubricant).toString());
 			
 			return tag;
 		}

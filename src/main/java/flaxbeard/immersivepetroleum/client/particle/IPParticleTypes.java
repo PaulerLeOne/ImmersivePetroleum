@@ -18,7 +18,6 @@ public class IPParticleTypes{
 	
 	private static SimpleParticleType createBasicParticle(String name, boolean alwaysShow){
 		SimpleParticleType particleType = new SimpleParticleType(alwaysShow);
-		particleType.setRegistryName(ResourceUtils.ip(name));
 		return particleType;
 	}
 	
@@ -31,7 +30,6 @@ public class IPParticleTypes{
 				return codec;
 			}
 		};
-		type.setRegistryName(ResourceUtils.ip(name));
 		return type;
 	}
 }

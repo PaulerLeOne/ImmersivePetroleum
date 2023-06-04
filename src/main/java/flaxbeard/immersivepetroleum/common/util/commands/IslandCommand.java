@@ -31,10 +31,9 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.coordinates.ColumnPosArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ColumnPos;
 import net.minecraft.world.level.Level;
@@ -143,12 +142,12 @@ public class IslandCommand{
 			}
 		}
 		
-		final ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + p.x + " ~ " + p.z);
-		final HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableComponent("chat.coordinates.tooltip"));
+		final ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + p.x() + " ~ " + p.z());
+		final HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.coordinates.tooltip"));
 		
-		source.sendSuccess(new TranslatableComponent("chat.immersivepetroleum.command.reservoir.locate",
+		source.sendSuccess(Component.translatable("chat.immersivepetroleum.command.reservoir.locate",
 				closestIsland.getType().name,
-				ComponentUtils.wrapInSquareBrackets(new TextComponent(p.x + " " + p.z)).withStyle((s) -> {
+				ComponentUtils.wrapInSquareBrackets(Component.literal(p.x() + " " + p.z())).withStyle((s) -> {
 					return s.withColor(ChatFormatting.GREEN)
 							.withItalic(true)
 							.withClickEvent(clickEvent)
@@ -212,7 +211,7 @@ public class IslandCommand{
 	
 	static <T extends ArgumentBuilder<CommandSourceStack, T>> T positional(T builder, BiFunction<CommandContext<CommandSourceStack>, ReservoirIsland, Integer> function){
 		builder.executes(command -> {
-			ColumnPos pos = new ColumnPos(new BlockPos(command.getSource().getPosition()));
+			ColumnPos pos = new ColumnPos((int)command.getSource().getPosition().x(), (int)command.getSource().getPosition().z());
 			
 			ReservoirIsland island = ReservoirHandler.getIsland(command.getSource().getLevel(), pos);
 			if(island == null){

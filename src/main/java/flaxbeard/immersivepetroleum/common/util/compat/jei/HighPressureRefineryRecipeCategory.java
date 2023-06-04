@@ -85,16 +85,5 @@ public class HighPressureRefineryRecipeCategory extends IPRecipeCategory<HighPre
 		}
 		matrix.popPose();
 	}
-	
-	@Override
-	@Deprecated
-	public ResourceLocation getUid(){
-		return null;
-	}
-	
-	@Override
-	@Deprecated
-	public Class<? extends HighPressureRefineryRecipe> getRecipeClass(){
-		return null;
-	}
+
 }

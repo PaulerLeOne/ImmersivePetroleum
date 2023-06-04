@@ -16,7 +16,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class FluidParticleData implements ParticleOptions{
-	public static final Codec<FluidParticleData> CODEC = RecordCodecBuilder.create(instance -> instance.group(Codec.STRING.fieldOf("fluid").forGetter(data -> data.fluid.getRegistryName().toString())).apply(instance, FluidParticleData::new));
+	public static final Codec<FluidParticleData> CODEC = RecordCodecBuilder.create(instance -> instance.group(Codec.STRING.fieldOf("fluid").forGetter(data -> ForgeRegistries.FLUIDS.getKey(data.fluid).toString())).apply(instance, FluidParticleData::new));
 	
 	@SuppressWarnings("deprecation")
 	public static final ParticleOptions.Deserializer<FluidParticleData> DESERIALIZER = new ParticleOptions.Deserializer<>(){
@@ -52,13 +52,13 @@ public class FluidParticleData implements ParticleOptions{
 	
 	@Override
 	public void writeToNetwork(FriendlyByteBuf buffer){
-		buffer.writeUtf(this.fluid.getRegistryName().toString());
+		buffer.writeUtf(ForgeRegistries.FLUIDS.getKey(this.fluid).toString());
 	}
 	
 	@Override
 	@Nonnull
 	public String writeToString(){
-		return this.fluid.getRegistryName().toString();
+		return ForgeRegistries.FLUIDS.getKey(this.fluid).toString();
 	}
 	
 	@OnlyIn(Dist.CLIENT)

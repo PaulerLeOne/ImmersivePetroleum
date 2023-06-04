@@ -23,7 +23,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.client.model.data.ModelData;
 
 public class PumpjackClientData extends IPClientMultiblockProperties{
 	public PumpjackClientData(){
@@ -50,7 +50,7 @@ public class PumpjackClientData extends IPClientMultiblockProperties{
 		if(this.list == null){
 			BlockState state = te.getBlockState();
 			BakedModel model = MCUtil.getBlockRenderer().getBlockModel(state);
-			this.list = model.getQuads(state, null, ApiUtils.RANDOM, EmptyModelData.INSTANCE);
+			this.list = model.getQuads(state, null, ApiUtils.RANDOM_SOURCE, ModelData.EMPTY, RenderType.solid());
 		}
 		
 		if(this.list != null && this.list.size() > 0){

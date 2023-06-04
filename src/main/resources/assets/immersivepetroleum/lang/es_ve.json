@@ -23,12 +23,12 @@
 	"block.immersivepetroleum.cokerunit": "Unidad de coquización",
 	"block.immersivepetroleum.hydrotreater": "Unidad de hidrodesulfuración",
 	
-	"fluid.immersivepetroleum.diesel": "Diésel",
-	"fluid.immersivepetroleum.diesel_sulfur": "Diésel sulfurizado",
-	"fluid.immersivepetroleum.crudeoil": "Petróleo crudo",
-	"fluid.immersivepetroleum.lubricant": "Lubricante",
-	"fluid.immersivepetroleum.gasoline": "Gasolina",
-	"fluid.immersivepetroleum.napalm": "Napalm",
+	"fluid_type.immersivepetroleum.diesel": "Diésel",
+	"fluid_type.immersivepetroleum.diesel_sulfur": "Diésel sulfurizado",
+	"fluid_type.immersivepetroleum.crudeoil": "Petróleo crudo",
+	"fluid_type.immersivepetroleum.lubricant": "Lubricante",
+	"fluid_type.immersivepetroleum.gasoline": "Gasolina",
+	"fluid_type.immersivepetroleum.napalm": "Napalm",
 	
 	"_comment": "################## Items ##################",
 	

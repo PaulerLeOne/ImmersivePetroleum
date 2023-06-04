@@ -12,7 +12,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.client.EffectRenderer;
+import net.minecraftforge.client.extensions.common.IClientMobEffectExtensions;
 import net.minecraftforge.registries.RegistryObject;
 
 // FIXME Redo this whole thing
@@ -32,30 +32,16 @@ public class IPEffects{
 		}
 		
 		@Override
-		public void initializeClient(Consumer<EffectRenderer> consumer){
-			consumer.accept(new EffectRenderer(){
-				
+		public void initializeClient(Consumer<IClientMobEffectExtensions> consumer){
+			consumer.accept(new IClientMobEffectExtensions(){
 				@Override
-				public boolean shouldRender(MobEffectInstance effect){
+				public boolean isVisibleInInventory(MobEffectInstance effect){
 					return false;
 				}
-				
+
 				@Override
-				public boolean shouldRenderHUD(MobEffectInstance effect){
+				public boolean isVisibleInGui(MobEffectInstance effect){
 					return false;
-				}
-				
-				@Override
-				public boolean shouldRenderInvText(MobEffectInstance effect){
-					return false;
-				}
-				
-				@Override
-				public void renderInventoryEffect(MobEffectInstance effectInstance, EffectRenderingInventoryScreen<?> gui, PoseStack poseStack, int x, int y, float z){
-				}
-				
-				@Override
-				public void renderHUDEffect(MobEffectInstance effectInstance, GuiComponent gui, PoseStack poseStack, int x, int y, float z, float alpha){
 				}
 			});
 		}

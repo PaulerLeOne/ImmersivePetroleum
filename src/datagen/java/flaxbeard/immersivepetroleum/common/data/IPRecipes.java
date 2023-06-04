@@ -49,8 +49,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
-import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidType;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class IPRecipes extends RecipeProvider{
 	private final Map<String, Integer> PATH_COUNT = new HashMap<>();
@@ -315,7 +316,7 @@ public class IPRecipes extends RecipeProvider{
 			.define('C', IPContent.Items.BITUMEN.get())
 			.define('S', Tags.Items.SAND)
 			.define('G', Tags.Items.GRAVEL)
-			.define('B', new IngredientFluidStack(FluidTags.WATER, FluidAttributes.BUCKET_VOLUME))
+			.define('B', new IngredientFluidStack(FluidTags.WATER, FluidType.BUCKET_VOLUME))
 			.pattern("SCS")
 			.pattern("GBG")
 			.pattern("SCS")
@@ -441,7 +442,7 @@ public class IPRecipes extends RecipeProvider{
 			.pattern(" i ")
 			.pattern("ioi")
 			.pattern(" ip")
-			.define('o', new IngredientFluidStack(IPTags.Fluids.lubricant, FluidAttributes.BUCKET_VOLUME))
+			.define('o', new IngredientFluidStack(IPTags.Fluids.lubricant, FluidType.BUCKET_VOLUME))
 			.define('i', IETags.getTagsFor(EnumMetals.IRON).plate)
 			.define('p', IEBlocks.MetalDevices.FLUID_PIPE)
 			.unlockedBy("has_drill", has(IEItems.Tools.DRILL))
@@ -589,7 +590,7 @@ public class IPRecipes extends RecipeProvider{
 	}
 	
 	private String toPath(ItemLike src){
-		return src.asItem().getRegistryName().getPath();
+		return ForgeRegistries.ITEMS.getKey(src.asItem()).getPath();
 	}
 	
 }

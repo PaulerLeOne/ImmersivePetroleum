@@ -23,12 +23,12 @@
 	"block.immersivepetroleum.cokerunit": "코크스 생성기",
 	"block.immersivepetroleum.hydrotreater": "황 추출기",
 	
-	"fluid.immersivepetroleum.diesel": "경유",
-	"fluid.immersivepetroleum.diesel_sulfur": "황화 경유",
-	"fluid.immersivepetroleum.crudeoil": "원유",
-	"fluid.immersivepetroleum.lubricant": "윤활유",
-	"fluid.immersivepetroleum.gasoline": "휘발유",
-	"fluid.immersivepetroleum.napalm": "네이팜",
+	"fluid_type.immersivepetroleum.diesel": "경유",
+	"fluid_type.immersivepetroleum.diesel_sulfur": "황화 경유",
+	"fluid_type.immersivepetroleum.crudeoil": "원유",
+	"fluid_type.immersivepetroleum.lubricant": "윤활유",
+	"fluid_type.immersivepetroleum.gasoline": "휘발유",
+	"fluid_type.immersivepetroleum.napalm": "네이팜",
 	
 	"_comment": "################## Items ##################",
 	
