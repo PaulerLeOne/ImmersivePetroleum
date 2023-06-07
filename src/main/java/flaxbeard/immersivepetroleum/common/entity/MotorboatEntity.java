@@ -63,11 +63,11 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -81,7 +81,6 @@ public class MotorboatEntity extends Boat implements IEntityAdditionalSpawnData{
 				.sized(1.375F, 0.5625F)
 				.clientTrackingRange(10)
 				.build(ImmersivePetroleum.MODID + ":speedboat");
-		ret.setRegistryName(ImmersivePetroleum.MODID, "speedboat");
 		return ret;
 	}
 	
@@ -257,7 +256,7 @@ public class MotorboatEntity extends Boat implements IEntityAdditionalSpawnData{
 			this.entityData.set(TANK_FLUID, "");
 			this.entityData.set(TANK_AMOUNT, 0);
 		}else{
-			this.entityData.set(TANK_FLUID, stack.getFluid() == null ? "" : stack.getFluid().getRegistryName().toString());
+			this.entityData.set(TANK_FLUID, stack.getFluid() == null ? "" : ForgeRegistries.FLUIDS.getKey(stack.getFluid()).toString());
 			this.entityData.set(TANK_AMOUNT, stack.getAmount());
 		}
 	}
@@ -333,7 +332,7 @@ public class MotorboatEntity extends Boat implements IEntityAdditionalSpawnData{
 						MotorboatItem item = (MotorboatItem) getDropItem();
 						ItemStack stack = new ItemStack(item, 1);
 						
-						IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElse(null);
+						IItemHandler handler = stack.getCapability(ForgeCapabilities.ITEM_HANDLER, null).orElse(null);
 						if(handler != null && handler instanceof IPItemStackHandler){
 							NonNullList<ItemStack> upgrades = getUpgrades();
 							for(int i = 0;i < handler.getSlots();i++){
@@ -529,9 +528,9 @@ public class MotorboatEntity extends Boat implements IEntityAdditionalSpawnData{
 				float moving = (this.inputUp || this.inputDown) ? (this.isBoosting ? .9F : .7F) : 0.5F;
 				if(this.lastMoving != moving){
 					this.lastMoving = moving;
-					ImmersivePetroleum.proxy.handleEntitySound(IESounds.dieselGenerator, this, false, .5f, 0.5F);
+					ImmersivePetroleum.proxy.handleEntitySound(IESounds.dieselGenerator.get(), this, false, .5f, 0.5F);
 				}
-				ImmersivePetroleum.proxy.handleEntitySound(IESounds.dieselGenerator, this, this.isVehicle() && this.getContainedFluid() != FluidStack.EMPTY && this.getContainedFluid().getAmount() > 0, this.inputUp || this.inputDown ? .5f : .3f, moving);
+				ImmersivePetroleum.proxy.handleEntitySound(IESounds.dieselGenerator.get(), this, this.isVehicle() && this.getContainedFluid() != FluidStack.EMPTY && this.getContainedFluid().getAmount() > 0, this.inputUp || this.inputDown ? .5f : .3f, moving);
 				
 				if(this.inputUp && this.level.random.nextInt(2) == 0){
 					if(isInLava()){

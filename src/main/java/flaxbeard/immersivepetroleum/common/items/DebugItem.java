@@ -5,6 +5,7 @@ import java.util.Locale;
 
 import javax.annotation.Nonnull;
 
+import net.minecraftforge.registries.ForgeRegistries;
 import org.lwjgl.glfw.GLFW;
 
 import flaxbeard.immersivepetroleum.ImmersivePetroleum;
@@ -26,7 +27,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -72,21 +72,21 @@ public class DebugItem extends IPItemBase{
 	@Override
 	@Nonnull
 	public Component getName(@Nonnull ItemStack stack){
-		return new TextComponent("IP Debugging Tool").withStyle(ChatFormatting.LIGHT_PURPLE);
+		return Component.literal("IP Debugging Tool").withStyle(ChatFormatting.LIGHT_PURPLE);
 	}
 	
 	@OnlyIn(Dist.CLIENT)
 	@Override
 	public void appendHoverText(@Nonnull ItemStack stack, Level worldIn, List<Component> tooltip, @Nonnull TooltipFlag flagIn){
-		tooltip.add(new TextComponent("[Shift + Scroll-UP/DOWN] Change mode.").withStyle(ChatFormatting.GRAY));
+		tooltip.add(Component.literal("[Shift + Scroll-UP/DOWN] Change mode.").withStyle(ChatFormatting.GRAY));
 		Modes mode = getMode(stack);
 		if(mode == Modes.DISABLED){
-			tooltip.add(new TextComponent("  Disabled.").withStyle(ChatFormatting.DARK_GRAY));
+			tooltip.add(Component.literal("  Disabled.").withStyle(ChatFormatting.DARK_GRAY));
 		}else{
-			tooltip.add(new TextComponent("  " + mode.display).withStyle(ChatFormatting.DARK_GRAY));
+			tooltip.add(Component.literal("  " + mode.display).withStyle(ChatFormatting.DARK_GRAY));
 		}
 		
-		tooltip.add(new TextComponent("You're not supposed to have this.").withStyle(ChatFormatting.DARK_RED));
+		tooltip.add(Component.literal("You're not supposed to have this.").withStyle(ChatFormatting.DARK_RED));
 		super.appendHoverText(stack, worldIn, tooltip, flagIn);
 	}
 	
@@ -111,7 +111,7 @@ public class DebugItem extends IPItemBase{
 					try{
 						IPModels.getModels().forEach(IPModel::init);
 						
-						playerIn.displayClientMessage(new TextComponent("Models refreshed."), true);
+						playerIn.displayClientMessage(Component.literal("Models refreshed."), true);
 					}catch(Exception e){
 						e.printStackTrace();
 					}
@@ -131,7 +131,7 @@ public class DebugItem extends IPItemBase{
 					
 					double noise = ReservoirHandler.getValueOf(worldIn, (chunkX + x), (chunkZ + z));
 					
-					playerIn.displayClientMessage(new TextComponent((chunkX + " " + chunkZ) + ": " + noise), true);
+					playerIn.displayClientMessage(Component.literal((chunkX + " " + chunkZ) + ": " + noise), true);
 					
 					return new InteractionResultHolder<>(InteractionResult.SUCCESS, playerIn.getItemInHand(handIn));
 				}
@@ -148,7 +148,7 @@ public class DebugItem extends IPItemBase{
 						if(playerIn.isShiftKeyDown()){
 							island.setAmount(island.getCapacity());
 							island.setDirty();
-							playerIn.displayClientMessage(new TextComponent("Island Refilled."), true);
+							playerIn.displayClientMessage(Component.literal("Island Refilled."), true);
 							return new InteractionResultHolder<>(InteractionResult.SUCCESS, playerIn.getItemInHand(handIn));
 						}
 						
@@ -161,7 +161,7 @@ public class DebugItem extends IPItemBase{
 								ReservoirIsland.getFlow(pressure),
 								new FluidStack(island.getFluid(), 1).getDisplayName().getString());
 						
-						playerIn.displayClientMessage(new TextComponent(out), true);
+						playerIn.displayClientMessage(Component.literal(out), true);
 						
 					}else{
 						/*
@@ -215,9 +215,9 @@ public class DebugItem extends IPItemBase{
 					BlockPos pos = context.getClickedPos();
 					
 					ResourceLocation dimensionRL = world.dimension().location();
-					ResourceLocation biomeRL = world.getBiome(pos).value().getRegistryName();
+					ResourceLocation biomeRL = ForgeRegistries.BIOMES.getKey(world.getBiome(pos).value());
 					
-					player.displayClientMessage(new TextComponent(dimensionRL.toString()), false);
+					player.displayClientMessage(Component.literal(dimensionRL.toString()), false);
 					
 					for(ReservoirType res:ReservoirType.map.values()){
 						BWList dims = res.getDimensions();
@@ -226,9 +226,9 @@ public class DebugItem extends IPItemBase{
 						boolean validDimension = dims.valid(dimensionRL);
 						boolean validBiome = biom.valid(biomeRL);
 						
-						MutableComponent component = new TextComponent(res.name)
-							.append(new TextComponent(" Dimension").withStyle(validDimension ? ChatFormatting.GREEN : ChatFormatting.RED))
-							.append(new TextComponent(" Biome").withStyle(validBiome ? ChatFormatting.GREEN : ChatFormatting.RED));
+						MutableComponent component = Component.literal(res.name)
+							.append(Component.literal(" Dimension").withStyle(validDimension ? ChatFormatting.GREEN : ChatFormatting.RED))
+							.append(Component.literal(" Biome").withStyle(validBiome ? ChatFormatting.GREEN : ChatFormatting.RED));
 						
 						if(validDimension && validBiome){
 							component = component.append(" (can spawn here)");
@@ -255,7 +255,7 @@ public class DebugItem extends IPItemBase{
 			return;
 		}
 		
-		MutableComponent textOut = new TextComponent("-- Speedboat --\n");
+		MutableComponent textOut = Component.literal("-- Speedboat --\n");
 		
 		FluidStack fluid = speedboatEntity.getContainedFluid();
 		if(fluid == FluidStack.EMPTY){
@@ -264,7 +264,7 @@ public class DebugItem extends IPItemBase{
 			textOut.append("Tank: " + fluid.getAmount() + "/" + speedboatEntity.getMaxFuel() + "mB of ").append(fluid.getDisplayName());
 		}
 		
-		MutableComponent upgradesText = new TextComponent("\n");
+		MutableComponent upgradesText = Component.literal("\n");
 		NonNullList<ItemStack> upgrades = speedboatEntity.getUpgrades();
 		int i = 0;
 		for(ItemStack upgrade:upgrades){
@@ -276,7 +276,7 @@ public class DebugItem extends IPItemBase{
 		}
 		textOut.append(upgradesText);
 		
-		player.sendMessage(textOut, Util.NIL_UUID);
+		player.sendSystemMessage(textOut);
 	}
 	
 	public static void setModeServer(ItemStack stack, Modes mode){
@@ -313,7 +313,7 @@ public class DebugItem extends IPItemBase{
 		static boolean shiftHeld = false;
 		
 		@SubscribeEvent
-		public static void handleScroll(InputEvent.MouseScrollEvent event){
+		public static void handleScroll(InputEvent.MouseScrollingEvent event){
 			double delta = event.getScrollDelta();
 			
 			if(shiftHeld && delta != 0.0){
@@ -337,14 +337,14 @@ public class DebugItem extends IPItemBase{
 					mode = Modes.values()[id];
 					
 					DebugItem.setModeClient(target, mode);
-					player.displayClientMessage(new TextComponent(mode.display), true);
+					player.displayClientMessage(Component.literal(mode.display), true);
 					event.setCanceled(true);
 				}
 			}
 		}
 		
 		@SubscribeEvent
-		public static void handleKey(InputEvent.KeyInputEvent event){
+		public static void handleKey(InputEvent.Key event){
 			if(event.getKey() == GLFW.GLFW_KEY_RIGHT_SHIFT || event.getKey() == GLFW.GLFW_KEY_LEFT_SHIFT){
 				switch(event.getAction()){
 					case GLFW.GLFW_PRESS -> {

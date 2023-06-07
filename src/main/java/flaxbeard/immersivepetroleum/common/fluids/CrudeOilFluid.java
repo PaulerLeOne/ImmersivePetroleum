@@ -6,7 +6,7 @@ import net.minecraft.world.level.LevelReader;
 
 public class CrudeOilFluid extends IPFluid{
 	public CrudeOilFluid(IPFluidEntry entry){
-		super(entry, 1000, 2250, false);
+		super(entry);
 	}
 	
 	@Override

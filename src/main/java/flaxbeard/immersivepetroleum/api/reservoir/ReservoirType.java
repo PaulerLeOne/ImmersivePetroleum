@@ -74,9 +74,9 @@ public class ReservoirType extends IESerializableRecipe{
 	 * @param weight   The weight for this reservoir
 	 */
 	public ReservoirType(String name, ResourceLocation id, Fluid fluid, int minSize, int maxSize, int residual, int equilibrium, int weight){
-		super(EMPTY_LAZY, IPRecipeTypes.RESERVOIR.get(), id);
+		super(EMPTY_LAZY, IPRecipeTypes.RESERVOIR, id);
 		this.name = name;
-		this.fluidLocation = fluid.getRegistryName();
+		this.fluidLocation = ForgeRegistries.FLUIDS.getKey(fluid);
 		this.fluid = fluid;
 		this.residual = residual;
 		this.equilibrium = equilibrium;
@@ -86,7 +86,7 @@ public class ReservoirType extends IESerializableRecipe{
 	}
 	
 	public ReservoirType(CompoundTag nbt){
-		super(EMPTY_LAZY, IPRecipeTypes.RESERVOIR.get(), new ResourceLocation(nbt.getString("id")));
+		super(EMPTY_LAZY, IPRecipeTypes.RESERVOIR, new ResourceLocation(nbt.getString("id")));
 		
 		this.name = nbt.getString("name");
 		

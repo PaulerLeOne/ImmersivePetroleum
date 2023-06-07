@@ -10,6 +10,8 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 
+import net.minecraft.util.RandomSource;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -47,7 +49,7 @@ public class ReservoirHandler{
 	private static long lastSeed;
 	private static PerlinSimplexNoise generator;
 	
-	public static void scanChunkForNewReservoirs(ServerLevel world, ChunkPos chunkPos, Random random){
+	public static void scanChunkForNewReservoirs(ServerLevel world, ChunkPos chunkPos, RandomSource random){
 		int chunkX = chunkPos.getMinBlockX();
 		int chunkZ = chunkPos.getMinBlockZ();
 		
@@ -63,7 +65,7 @@ public class ReservoirHandler{
 				
 				if(ReservoirHandler.getValueOf(world, x, z) > -1){
 					// Getting the biome now to prevent lockups
-					ResourceLocation biomeRL = world.getBiome(new BlockPos(x, 64, z)).value().getRegistryName();
+					ResourceLocation biomeRL = ForgeRegistries.BIOMES.getKey(world.getBiome(new BlockPos(x, 64, z)).value());
 					
 					final ColumnPos current = new ColumnPos(x, z);
 					if(storage.existsAt(current)){
@@ -127,10 +129,10 @@ public class ReservoirHandler{
 		
 		return totalWeight;
 	}
-	
+
 	/** May only be called on the server-side. Returns null on client-side. */
 	public static ReservoirIsland getIsland(Level world, BlockPos pos){
-		return getIsland(world, new ColumnPos(pos));
+		return getIsland(world, new ColumnPos(pos.getX(), pos.getZ()));
 	}
 	
 	/** May only be called on the server-side. Returns null on client-side. */
@@ -156,7 +158,7 @@ public class ReservoirHandler{
 	
 	/** <i>This should not be called too much.</i> May only be called on the server-side, returns null on client-side. */
 	public static ReservoirIsland getIslandNoCache(Level world, BlockPos pos){
-		return getIslandNoCache(world, new ColumnPos(pos));
+		return getIslandNoCache(world, new ColumnPos(pos.getX(), pos.getZ()));
 	}
 	
 	/** <i>This should not be called too much.</i> May only be called on the server-side, returns null on client-side. */
@@ -271,20 +273,20 @@ public class ReservoirHandler{
 		poly.forEach(pos -> {
 			for(int z = -1;z <= 1;z++){
 				for(int x = -1;x <= 1;x++){
-					if(ReservoirHandler.getValueOf(world, pos.x + 1, pos.z) == -1){
-						ColumnPos p = new ColumnPos(pos.x + 1, pos.z);
+					if(ReservoirHandler.getValueOf(world, pos.x() + 1, pos.z()) == -1){
+						ColumnPos p = new ColumnPos(pos.x() + 1, pos.z());
 						set.add(p);
 					}
-					if(ReservoirHandler.getValueOf(world, pos.x - 1, pos.z) == -1){
-						ColumnPos p = new ColumnPos(pos.x - 1, pos.z);
+					if(ReservoirHandler.getValueOf(world, pos.x() - 1, pos.z()) == -1){
+						ColumnPos p = new ColumnPos(pos.x() - 1, pos.z());
 						set.add(p);
 					}
-					if(ReservoirHandler.getValueOf(world, pos.x, pos.z + 1) == -1){
-						ColumnPos p = new ColumnPos(pos.x, pos.z + 1);
+					if(ReservoirHandler.getValueOf(world, pos.x(), pos.z() + 1) == -1){
+						ColumnPos p = new ColumnPos(pos.x(), pos.z() + 1);
 						set.add(p);
 					}
-					if(ReservoirHandler.getValueOf(world, pos.x, pos.z - 1) == -1){
-						ColumnPos p = new ColumnPos(pos.x, pos.z - 1);
+					if(ReservoirHandler.getValueOf(world, pos.x(), pos.z() - 1) == -1){
+						ColumnPos p = new ColumnPos(pos.x(), pos.z() - 1);
 						set.add(p);
 					}
 				}
@@ -338,7 +340,7 @@ public class ReservoirHandler{
 					int index = (startIndex + j) % list.size();
 					ColumnPos pos = list.get(index);
 					
-					if(startPos.z != pos.z){
+					if(startPos.z() != pos.z()){
 						break;
 					}
 					
@@ -353,7 +355,7 @@ public class ReservoirHandler{
 					int index = (startIndex + j) % list.size();
 					ColumnPos pos = list.get(index);
 					
-					if(startPos.x != pos.x){
+					if(startPos.x() != pos.x()){
 						break;
 					}
 					
@@ -370,8 +372,8 @@ public class ReservoirHandler{
 					int index = (startIndex + j) % list.size();
 					ColumnPos pos = list.get(index);
 					
-					int dx = Math.abs(pos.x - startPos.x);
-					int dz = Math.abs(pos.z - startPos.z);
+					int dx = Math.abs(pos.x() - startPos.x());
+					int dz = Math.abs(pos.z() - startPos.z());
 					
 					if(dx != dz){
 						break;
@@ -411,20 +413,20 @@ public class ReservoirHandler{
 	
 	private static boolean moveNext(ColumnPos pos, List<ColumnPos> src, List<ColumnPos> dst){
 		// X Z axis biased
-		ColumnPos p0 = new ColumnPos(pos.x + 1, pos.z);
-		ColumnPos p1 = new ColumnPos(pos.x - 1, pos.z);
-		ColumnPos p2 = new ColumnPos(pos.x, pos.z + 1);
-		ColumnPos p3 = new ColumnPos(pos.x, pos.z - 1);
+		ColumnPos p0 = new ColumnPos(pos.x() + 1, pos.z());
+		ColumnPos p1 = new ColumnPos(pos.x() - 1, pos.z());
+		ColumnPos p2 = new ColumnPos(pos.x(), pos.z() + 1);
+		ColumnPos p3 = new ColumnPos(pos.x(), pos.z() - 1);
 		
 		if((src.remove(p0) && dst.add(p0)) || (src.remove(p1) && dst.add(p1)) || (src.remove(p2) && dst.add(p2)) || (src.remove(p3) && dst.add(p3))){
 			return true;
 		}
 		
 		// Diagonals
-		ColumnPos p4 = new ColumnPos(pos.x - 1, pos.z - 1);
-		ColumnPos p5 = new ColumnPos(pos.x - 1, pos.z + 1);
-		ColumnPos p6 = new ColumnPos(pos.x + 1, pos.z - 1);
-		ColumnPos p7 = new ColumnPos(pos.x + 1, pos.z + 1);
+		ColumnPos p4 = new ColumnPos(pos.x() - 1, pos.z() - 1);
+		ColumnPos p5 = new ColumnPos(pos.x() - 1, pos.z() + 1);
+		ColumnPos p6 = new ColumnPos(pos.x() + 1, pos.z() - 1);
+		ColumnPos p7 = new ColumnPos(pos.x() + 1, pos.z() + 1);
 		
 		if((src.remove(p4) && dst.add(p4)) || (src.remove(p5) && dst.add(p5)) || (src.remove(p6) && dst.add(p6)) || (src.remove(p7) && dst.add(p7))){
 			return true;

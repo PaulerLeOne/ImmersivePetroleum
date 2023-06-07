@@ -1,5 +1,6 @@
 package flaxbeard.immersivepetroleum.common.data;
 
+import net.minecraftforge.data.event.GatherDataEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -11,7 +12,6 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 
 @EventBusSubscriber(modid = ImmersivePetroleum.MODID, bus = Bus.MOD)
 public class IPDataGenerator{
@@ -25,17 +25,17 @@ public class IPDataGenerator{
 		
 		if(event.includeServer()){
 			IPBlockTags blockTags = new IPBlockTags(generator, exhelper);
-			generator.addProvider(blockTags);
-			generator.addProvider(new IPItemTags(generator, blockTags, exhelper));
-			generator.addProvider(new IPFluidTags(generator, exhelper));
-			generator.addProvider(new IPLootGenerator(generator));
-			generator.addProvider(new IPRecipes(generator));
-			generator.addProvider(new IPAdvancements(generator, exhelper));
+			generator.addProvider(true, blockTags);
+			generator.addProvider(true, new IPItemTags(generator, blockTags, exhelper));
+			generator.addProvider(true, new IPFluidTags(generator, exhelper));
+			generator.addProvider(true, new IPLootGenerator(generator));
+			generator.addProvider(true, new IPRecipes(generator));
+			generator.addProvider(true, new IPAdvancements(generator, exhelper));
 		}
 		
 		if(event.includeClient()){
-			generator.addProvider(new IPBlockStates(generator, exhelper));
-			generator.addProvider(new IPItemModels(generator, exhelper));
+			generator.addProvider(true, new IPBlockStates(generator, exhelper));
+			generator.addProvider(true, new IPItemModels(generator, exhelper));
 		}
 	}
 }

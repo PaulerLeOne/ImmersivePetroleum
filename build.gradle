@@ -1,7 +1,7 @@
 buildscript {
 	repositories {
 		maven { url = 'https://maven.minecraftforge.net' }
-		jcenter()
+		//jcenter()
 		mavenCentral()
 		maven { url 'https://maven.parchmentmc.org' }
 	}
@@ -10,6 +10,12 @@ buildscript {
 		classpath 'org.parchmentmc:librarian:1.+'
 	}
 }
+
+/*plugins{
+	id 'net.minecraftforge.gradle' version '5.1.+'
+	id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+}*/
+
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
@@ -20,20 +26,6 @@ sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = co
 version = '4.1.0-19'
 group = 'flaxbeard.immersivepetroleum'
 archivesBaseName = 'ImmersivePetroleum-1.18.2'
-
-repositories {
-	maven {	name = "BlameJared";	url = "https://maven.blamejared.com/" }		 // IE & CT Files
-	maven { name = "DVS1 Maven FS"; url = "https://dvs1.progwml6.com/files/maven" } // JEI & Tinkers Files
-	maven { name = "CurseMaven";	url = 'https://cfa2.cursemaven.com' }		   // Needed for PNC
-	maven { // CC-Tweaked
-		url 'https://squiddev.cc/maven/'
-		content {
-			includeGroup 'org.squiddev'
-		}
-	}
-	
-	flatDir { dirs 'flatdir' }
-}
 
 sourceSets {
 	main {
@@ -114,20 +106,49 @@ minecraft {
 	}
 }
 
+repositories {
+	maven {
+		name = "JEI"
+		url = "https://dvs1.progwml6.com/files/maven/"
+	}
+	maven {
+		name = "CC: Tweaked"
+		url = "https://squiddev.cc/maven/"
+	}
+	maven {
+		name = "Crafttweaker, Patchouli & IE"
+		url = "https://maven.blamejared.com/"
+	}
+	maven {
+		name = "Pneumaticcraft"
+		url = "https://api.modrinth.com/maven"
+		content {
+			includeGroup "maven.modrinth"
+		}
+	}
+//	maven {	name = "BlameJared";	url = "https://maven.blamejared.com/" }		 // IE & CT Files
+//	maven { name = "DVS1 Maven FS"; url = "https://dvs1.progwml6.com/files/maven" } // JEI & Tinkers Files
+	maven { name = "CurseMaven";	url = 'https://cfa2.cursemaven.com' }		   // Needed for PNC
+
+	flatDir { dirs 'flatdir' }
+}
+
 dependencies {
 	minecraft "net.minecraftforge:forge:${version_minecraft}-${version_forge}"
-	
+
 	implementation fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${version_ie}")
 	//compile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:1.18.1-7.1.0-145:api")
 	datagenImplementation fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${version_ie}:datagen")
 
-	implementation fg.deobf("vazkii.patchouli:Patchouli:1.18.2-67")
-	implementation fg.deobf("curse.maven:pneumaticcraft-repressurized-281849:3913972")
+	implementation fg.deobf("vazkii.patchouli:Patchouli:1.19.2-77")
+	//implementation fg.deobf("curse.maven:pneumaticcraft-repressurized-281849:4395869")
+	implementation fg.deobf("maven.modrinth:pneumaticcraft-repressurized:1.19.2-4.3.4")
 
-	compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-1.18.2:${version_ct}")
-	
-	runtimeOnly fg.deobf("mezz.jei:jei-${version_minecraft}:${version_jei}")
-	compileOnly fg.deobf("mezz.jei:jei-${version_minecraft}:${version_jei}:api")
+	compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-${version_minecraft}:${version_ct}")
+
+	compileOnly(fg.deobf("mezz.jei:jei-${version_minecraft}-common-api:${version_jei}"))
+	compileOnly(fg.deobf("mezz.jei:jei-${version_minecraft}-forge-api:${version_jei}"))
+	runtimeOnly(fg.deobf("mezz.jei:jei-${version_minecraft}-forge:${version_jei}"))
 	
     compileOnly fg.deobf("org.squiddev:cc-tweaked-${version_minecraft}:${version_cctweaked}")
 }
@@ -150,6 +171,8 @@ jar {
 		])
 	}
 }
+
+jar.finalizedBy('reobfJar')
 
 def reobfFile = file("$buildDir/reobfJar/output.jar")
 def reobfArtifact = artifacts.add('default', reobfFile){ type 'jar'; builtBy 'reobfJar'; }

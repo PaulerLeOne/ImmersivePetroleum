@@ -20,7 +20,7 @@ import net.minecraft.world.level.material.Material;
 
 public class WellBlock extends IPBlockBase implements EntityBlock{
 	public WellBlock(){
-		super(Block.Properties.of(Material.STONE).strength(-1.0F, 3600000.0F).noDrops().isValidSpawn((s, r, p, e) -> false).requiresCorrectToolForDrops());
+		super(Block.Properties.of(Material.STONE).strength(-1.0F, 3600000.0F).noLootTable().isValidSpawn((s, r, p, e) -> false).requiresCorrectToolForDrops());
 	}
 	
 	@Override

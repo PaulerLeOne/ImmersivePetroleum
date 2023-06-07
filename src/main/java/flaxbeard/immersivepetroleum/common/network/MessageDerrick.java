@@ -2,6 +2,7 @@ package flaxbeard.immersivepetroleum.common.network;
 
 import java.util.Objects;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import flaxbeard.immersivepetroleum.client.gui.elements.PipeConfig;
 import flaxbeard.immersivepetroleum.common.blocks.tileentities.DerrickTileEntity;
@@ -50,12 +51,13 @@ public class MessageDerrick implements INetMessage{
 				if(world.isAreaLoaded(this.derrickPos, 2)){
 					BlockEntity te = world.getBlockEntity(this.derrickPos);
 					if(te instanceof DerrickTileEntity derrick){
-						
+
 						derrick.gridStorage = PipeConfig.Grid.fromCompound(this.nbt);
 						derrick.updateMasterBlock(null, true);
-						
+
 						WellTileEntity well = derrick.getWell();
 						derrick.transferGridDataToWell(well);
+
 					}
 				}
 			}

@@ -26,11 +26,9 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class CokerUnitScreen extends IEContainerScreen<CokerUnitContainer>{
 	public static final ResourceLocation GUI_TEXTURE = ResourceUtils.ip("textures/gui/coker.png");
-	
-	CokerUnitTileEntity tile;
+
 	public CokerUnitScreen(CokerUnitContainer inventorySlotsIn, Inventory inv, Component title){
 		super(inventorySlotsIn, inv, title, GUI_TEXTURE);
-		this.tile = menu.tile;
 		
 		this.imageWidth = 200;
 		this.imageHeight = 187;
@@ -46,20 +44,20 @@ public class CokerUnitScreen extends IEContainerScreen<CokerUnitContainer>{
 	protected List<InfoArea> makeInfoAreas(){
 		return List.of(
 				new FluidInfoArea(
-						this.tile.bufferTanks[TANK_INPUT],
+						this.menu.bufferTanks[TANK_INPUT],
 						new Rect2i(this.leftPos + 32, this.topPos + 14, 16, 47),
 						202, 2, 16, 47,
 						GUI_TEXTURE
 				),
 				new FluidInfoArea(
-						this.tile.bufferTanks[TANK_OUTPUT],
+						this.menu.bufferTanks[TANK_OUTPUT],
 						new Rect2i(this.leftPos + 152, this.topPos + 14, 16, 47),
 						202, 2, 16, 47,
 						GUI_TEXTURE
 				),
-				new EnergyDisplay(this.leftPos + 168, this.topPos + 67, 7, 21, this.tile.energyStorage),
-				new CokerChamberInfoArea(this.tile.chambers[CHAMBER_A], new Rect2i(this.leftPos + 74, this.topPos + 24, 6, 38)),
-				new CokerChamberInfoArea(this.tile.chambers[CHAMBER_B], new Rect2i(this.leftPos + 120, this.topPos + 24, 6, 38))
+				new EnergyDisplay(this.leftPos + 168, this.topPos + 67, 7, 21, this.menu.energyStorage),
+				new CokerChamberInfoArea(this.menu.chambers[CHAMBER_A], new Rect2i(this.leftPos + 74, this.topPos + 24, 6, 38)),
+				new CokerChamberInfoArea(this.menu.chambers[CHAMBER_B], new Rect2i(this.leftPos + 120, this.topPos + 24, 6, 38))
 		);
 	}
 }

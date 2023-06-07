@@ -110,6 +110,9 @@
   "textures": {
     "texture": "immersivepetroleum:projectors/projector"
   },
+  "layers": [
+    "cutout"
+  ],
   "loader": "immersiveengineering:ie_obj",
   "model": "immersivepetroleum:models/item/obj/projector.obj",
   "callbacks": "immersiveengineering:default"
