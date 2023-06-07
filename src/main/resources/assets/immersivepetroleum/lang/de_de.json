@@ -24,12 +24,12 @@
 	"block.immersivepetroleum.derrick": "Bohrturm",
 	"block.immersivepetroleum.oiltank": "Rohöltank",
 	
-	"fluid_type.immersivepetroleum.diesel": "Diesel",
-	"fluid_type.immersivepetroleum.diesel_sulfur": "Schwefeldiesel",
-	"fluid_type.immersivepetroleum.crudeoil": "Rohöl",
-	"fluid_type.immersivepetroleum.lubricant": "Schmiermittel",
-	"fluid_type.immersivepetroleum.gasoline": "Benzin",
-	"fluid_type.immersivepetroleum.napalm": "Napalm",
+	"fluid.immersivepetroleum.diesel": "Diesel",
+	"fluid.immersivepetroleum.diesel_sulfur": "Schwefeldiesel",
+	"fluid.immersivepetroleum.crudeoil": "Rohöl",
+	"fluid.immersivepetroleum.lubricant": "Schmiermittel",
+	"fluid.immersivepetroleum.gasoline": "Benzin",
+	"fluid.immersivepetroleum.napalm": "Napalm",
 	
 	"_comment": "################## Items ##################",
 	

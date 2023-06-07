@@ -18,6 +18,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -38,10 +39,10 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 public class MotorboatItem extends IPItemBase implements IUpgradeableTool{
@@ -84,7 +85,7 @@ public class MotorboatItem extends IPItemBase implements IUpgradeableTool{
 		
 		clearUpgrades(stack);
 		
-		LazyOptional<IItemHandler> lazy = stack.getCapability(ForgeCapabilities.ITEM_HANDLER);
+		LazyOptional<IItemHandler> lazy = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
 		lazy.ifPresent(handler -> {
 			CompoundTag nbt = new CompoundTag();
 			
@@ -173,7 +174,7 @@ public class MotorboatItem extends IPItemBase implements IUpgradeableTool{
 	}
 	
 	protected NonNullList<ItemStack> getContainedItems(ItemStack stack){
-		IItemHandler handler = stack.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
+		IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
 		
 		if(handler == null){
 			ImmersivePetroleum.log.debug("No valid inventory handler found for " + stack);
@@ -217,7 +218,7 @@ public class MotorboatItem extends IPItemBase implements IUpgradeableTool{
 		
 		Component c = super.getName(stack);
 		if(hasUpgrades){
-			c = Component.translatable("desc.immersivepetroleum.flavour.speedboat.prefix").append(c).withStyle(ChatFormatting.GOLD);
+			c = new TranslatableComponent("desc.immersivepetroleum.flavour.speedboat.prefix").append(c).withStyle(ChatFormatting.GOLD);
 		}
 		return c;
 	}
@@ -240,7 +241,7 @@ public class MotorboatItem extends IPItemBase implements IUpgradeableTool{
 				for(int i = 0;i < items.size();i++){
 					ItemStack upgrade = items.get(i);
 					if(upgrade != ItemStack.EMPTY){
-						tooltip.add(Component.translatable("desc.immersivepetroleum.flavour.speedboat.upgrade", i + 1).append(upgrade.getHoverName()));
+						tooltip.add(new TranslatableComponent("desc.immersivepetroleum.flavour.speedboat.upgrade", i + 1).append(upgrade.getHoverName()));
 					}
 				}
 			}

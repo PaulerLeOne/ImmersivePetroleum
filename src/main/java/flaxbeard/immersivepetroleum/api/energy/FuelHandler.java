@@ -3,8 +3,6 @@ package flaxbeard.immersivepetroleum.api.energy;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,13 +22,13 @@ public class FuelHandler{
 	
 	public static void registerPortableGeneratorFuel(Fluid fuel, int fluxPerTick, int mbPerTick){
 		if(fuel != null){
-			registerPortableGeneratorFuel(ForgeRegistries.FLUIDS.getKey(fuel), mbPerTick, fluxPerTick);
+			registerPortableGeneratorFuel(fuel.getRegistryName(), mbPerTick, fluxPerTick);
 		}
 	}
 	
 	public static void registerMotorboatFuel(Fluid fuel, int mbPerTick){
 		if(fuel != null){
-			registerMotorboatFuel(ForgeRegistries.FLUIDS.getKey(fuel), mbPerTick);
+			registerMotorboatFuel(fuel.getRegistryName(), mbPerTick);
 		}
 	}
 	
@@ -51,32 +49,32 @@ public class FuelHandler{
 	}
 	
 	public static boolean isValidBoatFuel(Fluid fuel){
-		return fuel != null && motorboatAmountTick.containsKey(ForgeRegistries.FLUIDS.getKey(fuel));
+		return fuel != null && motorboatAmountTick.containsKey(fuel.getRegistryName());
 	}
 	
 	public static boolean isValidFuel(Fluid fuel){
-		return fuel != null && portablegen.containsKey(ForgeRegistries.FLUIDS.getKey(fuel));
+		return fuel != null && portablegen.containsKey(fuel.getRegistryName());
 	}
 	
 	public static int getBoatFuelUse(Fluid fuel){
 		if(!isValidBoatFuel(fuel))
 			return 0;
 		
-		return motorboatAmountTick.get(ForgeRegistries.FLUIDS.getKey(fuel));
+		return motorboatAmountTick.get(fuel.getRegistryName());
 	}
 	
 	public static int getGeneratorFuelUse(Fluid fuel){
 		if(!isValidFuel(fuel))
 			return 0;
 		
-		return portablegen.get(ForgeRegistries.FLUIDS.getKey(fuel)).mBPerConsume;
+		return portablegen.get(fuel.getRegistryName()).mBPerConsume;
 	}
 	
 	public static int getFluxGeneratedPerTick(Fluid fuel){
 		if(!isValidFuel(fuel))
 			return 0;
 		
-		return portablegen.get(ForgeRegistries.FLUIDS.getKey(fuel)).fluxPerTick;
+		return portablegen.get(fuel.getRegistryName()).fluxPerTick;
 	}
 	
 	public static void onConfigReload(ModConfigEvent ev){

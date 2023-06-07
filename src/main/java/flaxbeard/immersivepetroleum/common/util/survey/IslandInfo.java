@@ -100,7 +100,7 @@ public class IslandInfo implements ISurveyInfo{
 		tag.putInt("expected", this.expected);
 		
 		if(!this.fluidStack.isEmpty()){
-			tag.putString("fluid", ForgeRegistries.FLUIDS.getKey(this.fluidStack.getFluid()).toString());
+			tag.putString("fluid", this.fluidStack.getFluid().getRegistryName().toString());
 		}
 		
 		return tag;

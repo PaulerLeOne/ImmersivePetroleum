@@ -35,8 +35,9 @@ import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.InteractionHand;
@@ -45,7 +46,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.material.Material;
-import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.common.util.Lazy;
 
 public class ProjectorScreen extends Screen{
@@ -78,7 +80,7 @@ public class ProjectorScreen extends Screen{
 	
 	float rotation = 0.0F, move = 0.0F;
 	public ProjectorScreen(InteractionHand hand, ItemStack projector){
-		super(Component.literal("projector"));
+		super(new TextComponent("projector"));
 		this.settings = new Settings(projector);
 		this.hand = hand;
 		this.multiblocks = Lazy.of(MultiblockHandler::getMultiblocks);
@@ -221,11 +223,11 @@ public class ProjectorScreen extends Screen{
 			int y = this.guiTop + 82;
 			
 			Direction dir = Direction.from2DDataValue(this.settings.getRotation().ordinal());
-			Component dirText = Component.literal(dir.toString().toUpperCase().substring(0, 1));
+			TextComponent dirText = new TextComponent(dir.toString().toUpperCase().substring(0, 1));
 			drawCenteredString(matrix, this.font, dirText, x + 5, y + 1, -1);
 			
 			if(mouseX > x && mouseX < x + 10 && mouseY > y && mouseY < y + 10){
-				Component rotText = Component.translatable("desc.immersivepetroleum.info.projector.rotated." + dir);
+				Component rotText = new TranslatableComponent("desc.immersivepetroleum.info.projector.rotated." + dir);
 				renderTooltip(matrix, rotText, mouseX, mouseY);
 			}
 		}
@@ -268,12 +270,12 @@ public class ProjectorScreen extends Screen{
 								matrix.pushPose();
 								{
 									matrix.translate(info.pos.getX(), info.pos.getY(), info.pos.getZ());
-									ModelData modelData = ModelData.EMPTY;
+									IModelData modelData = EmptyModelData.INSTANCE;
 									BlockEntity te = this.templateWorld.getBlockEntity(info.pos);
 									if(te != null){
 										modelData = te.getModelData();
 									}
-									blockRender.renderSingleBlock(info.state, matrix, IPRenderTypes.disableLighting(buffer), 0xF000F0, OverlayTexture.NO_OVERLAY, modelData, null);
+									blockRender.renderSingleBlock(info.state, matrix, IPRenderTypes.disableLighting(buffer), 0xF000F0, OverlayTexture.NO_OVERLAY, modelData);
 								}
 								matrix.popPose();
 							}
@@ -417,7 +419,7 @@ public class ProjectorScreen extends Screen{
 	// STATIC METHODS
 	
 	static Component translation(String key){
-		return Component.translatable(key);
+		return new TranslatableComponent(key);
 	}
 	
 	// STATIC CLASSES
@@ -429,7 +431,7 @@ public class ProjectorScreen extends Screen{
 		protected int bgStartX = 0, bgStartY = 166;
 		protected Consumer<PButton> action;
 		public PButton(int x, int y, int width, int height, int overlayX, int overlayY, Consumer<PButton> action){
-			super(x, y, width, height, CommonComponents.EMPTY);
+			super(x, y, width, height, TextComponent.EMPTY);
 			this.action = action;
 			this.xOverlay = overlayX;
 			this.yOverlay = overlayY;

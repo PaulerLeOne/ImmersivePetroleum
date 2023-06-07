@@ -39,11 +39,11 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidTank;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
@@ -121,7 +121,7 @@ public class PumpjackTileEntity extends PoweredMultiblockBlockEntity<PumpjackTil
 						for(ColumnPos cPos:well.tappedIslands){
 							ReservoirIsland island = ReservoirHandler.getIsland(this.level, cPos);
 							
-							if(island != null && island.getPressure(getLevelNonnull(), cPos.x(), cPos.z()) > 0.0F){
+							if(island != null && island.getPressure(getLevelNonnull(), cPos.x, cPos.z) > 0.0F){
 								foundPressurizedIsland = true;
 								break;
 							}
@@ -282,7 +282,7 @@ public class PumpjackTileEntity extends PoweredMultiblockBlockEntity<PumpjackTil
 	@Nonnull
 	@Override
 	public <C> LazyOptional<C> getCapability(@Nonnull Capability<C> capability, @Nullable Direction side){
-		if(capability == ForgeCapabilities.FLUID_HANDLER){
+		if(capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY){
 			// East Port
 			if(this.posInMultiblock.equals(East_Port)){
 				if(side == null || (getIsMirrored() ? (side == getFacing().getCounterClockWise()) : (side == getFacing().getClockWise()))){

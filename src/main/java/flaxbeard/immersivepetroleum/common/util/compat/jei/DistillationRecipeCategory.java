@@ -72,10 +72,8 @@ public class DistillationRecipeCategory extends IPRecipeCategory<DistillationTow
 	@Override
 	public void draw(@Nonnull DistillationTowerRecipe recipe, @Nonnull IRecipeSlotsView recipeSlotsView, @Nonnull PoseStack matrix, double mouseX, double mouseY){
 	}
-
-
-
-	/*@Override
+	
+	@Override
 	@Deprecated
 	public ResourceLocation getUid(){
 		return null;
@@ -85,5 +83,5 @@ public class DistillationRecipeCategory extends IPRecipeCategory<DistillationTow
 	@Deprecated
 	public Class<? extends DistillationTowerRecipe> getRecipeClass(){
 		return null;
-	}*/
+	}
 }

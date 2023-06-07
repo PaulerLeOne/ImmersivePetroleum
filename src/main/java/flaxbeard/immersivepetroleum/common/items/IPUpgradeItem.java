@@ -11,13 +11,13 @@ import blusunrize.immersiveengineering.api.tool.IUpgrade;
 import flaxbeard.immersivepetroleum.ImmersivePetroleum;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class IPUpgradeItem extends IPItemBase implements IUpgrade{
 	private Set<String> set;
@@ -29,7 +29,7 @@ public class IPUpgradeItem extends IPItemBase implements IUpgrade{
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public void appendHoverText(@Nonnull ItemStack stack, Level worldIn, List<Component> tooltip, @Nonnull TooltipFlag flagIn){
-		tooltip.add(Component.translatable("desc.immersivepetroleum.flavour." + ForgeRegistries.ITEMS.getKey(this).getPath()));
+		tooltip.add(new TranslatableComponent("desc.immersivepetroleum.flavour." + getRegistryName().getPath()));
 	}
 	
 	@Override

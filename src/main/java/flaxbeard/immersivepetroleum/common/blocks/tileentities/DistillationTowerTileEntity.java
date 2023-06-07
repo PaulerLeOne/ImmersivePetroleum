@@ -46,13 +46,14 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidTank;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -89,27 +90,19 @@ public class DistillationTowerTileEntity extends PoweredMultiblockBlockEntity<Di
 	
 	/** Template-Location of the Redstone Input Port. (0 1 3) */
 	public static final Set<BlockPos> Redstone_IN = ImmutableSet.of(new BlockPos(0, 1, 3));
-
-	public static final int NUM_SLOTS = 4;
 	
 	public NonNullList<ItemStack> inventory = NonNullList.withSize(4, ItemStack.EMPTY);
-	public final MultiFluidTank[] tanks = makeTanks();
+	public final MultiFluidTank[] tanks = new MultiFluidTank[]{
+			new MultiFluidTankFiltered(24000, fs -> DistillationTowerRecipe.findRecipe(fs) != null),
+			new MultiFluidTankFiltered(24000)
+	};
 	private int cooldownTicks = 0;
 	private boolean wasActive = false;
-
-	public static int TANK_VOLUME = 24000;
-	public static int ENERGY_CAPACITY = 16000;
+	
 	public DistillationTowerTileEntity(BlockEntityType<DistillationTowerTileEntity> type, BlockPos pWorldPosition, BlockState pBlockState){
-		super(DistillationTowerMultiblock.INSTANCE, ENERGY_CAPACITY, true, type, pWorldPosition, pBlockState);
+		super(DistillationTowerMultiblock.INSTANCE, 16000, true, type, pWorldPosition, pBlockState);
 	}
-
-	public static MultiFluidTank[] makeTanks(){
-		return new MultiFluidTank[]{
-		new MultiFluidTankFiltered(TANK_VOLUME, fs->DistillationTowerRecipe.findRecipe(fs)!=null),
-		new MultiFluidTankFiltered(TANK_VOLUME)
-		};
-	}
-
+	
 	@Override
 	public void readCustomNBT(CompoundTag nbt, boolean descPacket){
 		super.readCustomNBT(nbt, descPacket);
@@ -395,7 +388,7 @@ public class DistillationTowerTileEntity extends PoweredMultiblockBlockEntity<Di
 		
 		BlockEntity te = level.getBlockEntity(outputpos);
 		if(te != null){
-			IItemHandler handler = te.getCapability(ForgeCapabilities.ITEM_HANDLER, outputdir.getOpposite()).orElse(null);
+			IItemHandler handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, outputdir.getOpposite()).orElse(null);
 			if(handler != null){
 				output = ItemHandlerHelper.insertItem(handler, output, false);
 			}
@@ -465,7 +458,7 @@ public class DistillationTowerTileEntity extends PoweredMultiblockBlockEntity<Di
 	@Nonnull
 	@Override
 	public <C> LazyOptional<C> getCapability(@Nonnull Capability<C> capability, @Nullable Direction side){
-		if(capability == ForgeCapabilities.FLUID_HANDLER){
+		if(capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY){
 			if(this.posInMultiblock.equals(Fluid_IN)){
 				if(side == null || (getIsMirrored() ? (side == getFacing().getCounterClockWise()) : (side == getFacing().getClockWise()))){
 					return this.inputHandler.getAndCast();

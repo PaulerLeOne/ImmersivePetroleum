@@ -1,11 +1,10 @@
 package flaxbeard.immersivepetroleum.common;
 
-import blusunrize.immersiveengineering.common.gui.IEContainerMenu;
-import blusunrize.immersiveengineering.common.register.IEMenuTypes;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 
+import blusunrize.immersiveengineering.common.gui.IEBaseContainer;
+import blusunrize.immersiveengineering.common.register.IEContainerTypes;
 import flaxbeard.immersivepetroleum.ImmersivePetroleum;
 import flaxbeard.immersivepetroleum.common.blocks.tileentities.CokerUnitTileEntity;
 import flaxbeard.immersivepetroleum.common.blocks.tileentities.DerrickTileEntity;
@@ -25,31 +24,29 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class IPMenuTypes{
 	public static final BEContainerIP<DistillationTowerTileEntity, DistillationTowerContainer> DISTILLATION_TOWER =
-			registerBENew("distillation_tower", DistillationTowerContainer::makeServer, DistillationTowerContainer::makeClient);
+			register("distillation_tower", DistillationTowerContainer::new);
 	public static final BEContainerIP<DerrickTileEntity, DerrickContainer> DERRICK =
-			registerBENew("derrick", DerrickContainer::makeServer, DerrickContainer::makeClient);
+			register("derrick", DerrickContainer::new);
 	public static final BEContainerIP<CokerUnitTileEntity, CokerUnitContainer> COKER =
-			registerBENew("coker", CokerUnitContainer::makeServer, CokerUnitContainer::makeClient);
+			register("coker", CokerUnitContainer::new);
 	public static final BEContainerIP<HydrotreaterTileEntity, HydrotreaterContainer> HYDROTREATER =
-			registerBENew("hydrotreater", HydrotreaterContainer::makeServer, HydrotreaterContainer::makeClient);
+			register("hydrotreater", HydrotreaterContainer::new);
 	
 	public static void forceClassLoad(){}
-
-
-	public static <T extends  BlockEntity, C extends IEContainerMenu> BEContainerIP<T, C> registerBENew
-			(String name, IEMenuTypes.BEContainerConstructor<T, C> container, IEMenuTypes.ClientContainerConstructor<C> client ){
-		RegistryObject<MenuType<C>> type = registerType(name, client);
-		return new BEContainerIP<>(type, container);
-	}
-
-	public static <C extends IEContainerMenu> RegistryObject<MenuType<C>> registerType (String name, IEMenuTypes.ClientContainerConstructor<C> client){
-		return IPRegisters.registerMenu(
-				name, ()->{
-					Mutable<MenuType<C>> typeBox = new MutableObject<>();
-					MenuType<C> type = new MenuType<>((id, inv)->client.construct(typeBox.getValue(), id, inv));
-					typeBox.setValue(type);
-					return type;
-				}
-		);
+	
+	@SuppressWarnings("unchecked")
+	public static <T extends BlockEntity, C extends IEBaseContainer<? super T>> BEContainerIP<T, C> register(String name, IEContainerTypes.BEContainerConstructor<T, C> container){
+		RegistryObject<MenuType<C>> typeRef = IPRegisters.registerMenu(name, () -> {
+			Mutable<MenuType<C>> typeBox = new MutableObject<>();
+			MenuType<C> type = new MenuType<>((IContainerFactory<C>) (windowId, inv, data) -> {
+				Level world = ImmersivePetroleum.proxy.getClientWorld();
+				BlockPos pos = data.readBlockPos();
+				BlockEntity te = world.getBlockEntity(pos);
+				return container.construct(typeBox.getValue(), windowId, inv, (T) te);
+			});
+			typeBox.setValue(type);
+			return type;
+		});
+		return new BEContainerIP<>(typeRef, container);
 	}
 }

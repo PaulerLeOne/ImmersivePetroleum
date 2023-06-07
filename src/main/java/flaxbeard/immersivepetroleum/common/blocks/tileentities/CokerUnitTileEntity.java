@@ -8,8 +8,6 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import blusunrize.immersiveengineering.common.gui.sync.GenericContainerData;
-import blusunrize.immersiveengineering.common.gui.sync.GenericDataSerializers;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 
@@ -52,14 +50,15 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidTank;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -119,16 +118,10 @@ public class CokerUnitTileEntity extends PoweredMultiblockBlockEntity<CokerUnitT
 	public static final Set<BlockPos> Redstone_IN = ImmutableSet.of(new BlockPos(1, 1, 4));
 	
 	public final NonNullList<ItemStack> inventory = NonNullList.withSize(Inventory.values().length, ItemStack.EMPTY);
-	public final FluidTank[] bufferTanks = makeTanks();
-		public static FluidTank[] makeTanks(){return new FluidTank[]{new FluidTank(16000), new FluidTank(16000)};}
-
-	public final CokingChamber[] chambers = makeChambers();
-		public static CokingChamber[] makeChambers(){return new CokingChamber[]{new CokingChamber(64, 8000), new CokingChamber(64, 8000)};}
-
-	public static int ENERGY_CAPACITY = 24000;
-
+	public final FluidTank[] bufferTanks = {new FluidTank(16000), new FluidTank(16000)};
+	public final CokingChamber[] chambers = {new CokingChamber(64, 8000), new CokingChamber(64, 8000)};
 	public CokerUnitTileEntity(BlockEntityType<CokerUnitTileEntity> type, BlockPos pWorldPosition, BlockState pBlockState){
-		super(CokerUnitMultiblock.INSTANCE, ENERGY_CAPACITY, true, type, pWorldPosition, pBlockState);
+		super(CokerUnitMultiblock.INSTANCE, 24000, true, type, pWorldPosition, pBlockState);
 		this.bufferTanks[TANK_INPUT].setValidator(fs -> CokerUnitRecipe.hasRecipeWithInput(fs, true));
 	}
 	
@@ -215,9 +208,9 @@ public class CokerUnitTileEntity extends PoweredMultiblockBlockEntity<CokerUnitT
 	@Override
 	@Nonnull
 	public <C> LazyOptional<C> getCapability(@Nonnull Capability<C> capability, @Nullable Direction facing){
-		if((facing == null || this.posInMultiblock.equals(Item_IN)) && capability == ForgeCapabilities.ITEM_HANDLER){
+		if((facing == null || this.posInMultiblock.equals(Item_IN)) && capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY){
 			return this.insertionHandler.getAndCast();
-		}else if(capability == ForgeCapabilities.FLUID_HANDLER){
+		}else if(capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY){
 			if(this.posInMultiblock.equals(Fluid_OUT) && (facing == null || facing == getFacing().getOpposite())){
 				return this.fluidOutHandler.getAndCast();
 			}else if(this.posInMultiblock.equals(Fluid_IN) && (facing == null || facing == getFacing().getOpposite())){
@@ -939,7 +932,6 @@ public class CokerUnitTileEntity extends PoweredMultiblockBlockEntity<CokerUnitT
 	}
 	
 	public static class CokingChamber{
-
 		@Nullable
 		CokerUnitRecipe recipe = null;
 		CokingState state = CokingState.STANDBY;

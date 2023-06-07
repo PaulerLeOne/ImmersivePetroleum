@@ -11,10 +11,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.resources.model.MultiPartBakedModel;
-import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.lang3.tuple.Pair;
@@ -62,6 +58,8 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -87,6 +85,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent.Stage;
+import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -110,12 +110,12 @@ public class ProjectorItem extends IPItemBase implements IUpgradeableTool{
 		if(stack.hasTag()){
 			Settings settings = getSettings(stack);
 			if(settings.getMultiblock() != null){
-				Component name = settings.getMultiblock().getDisplayName(); //Component.translatable("desc.immersiveengineering.info.multiblock.IE:" + getActualMBName(settings.getMultiblock()));
+				Component name = settings.getMultiblock().getDisplayName(); //new TranslatableComponent("desc.immersiveengineering.info.multiblock.IE:" + getActualMBName(settings.getMultiblock()));
 				
-				return Component.translatable(selfKey + ".specific", name).withStyle(ChatFormatting.GOLD);
+				return new TranslatableComponent(selfKey + ".specific", name).withStyle(ChatFormatting.GOLD);
 			}
 		}
-		return Component.translatable(selfKey).withStyle(ChatFormatting.GOLD);
+		return new TranslatableComponent(selfKey).withStyle(ChatFormatting.GOLD);
 	}
 	
 	@OnlyIn(Dist.CLIENT)
@@ -124,24 +124,24 @@ public class ProjectorItem extends IPItemBase implements IUpgradeableTool{
 		if(settings.getMultiblock() != null){
 			Vec3i size = settings.getMultiblock().getSize(worldIn);
 			
-			tooltip.add(Component.translatable("desc.immersivepetroleum.info.projector.build0"));
-			tooltip.add(Component.translatable("desc.immersivepetroleum.info.projector.build1", settings.getMultiblock().getDisplayName()));
+			tooltip.add(new TranslatableComponent("desc.immersivepetroleum.info.projector.build0"));
+			tooltip.add(new TranslatableComponent("desc.immersivepetroleum.info.projector.build1", settings.getMultiblock().getDisplayName()));
 			
 			if(isPressing(GLFW.GLFW_KEY_LEFT_SHIFT) || isPressing(GLFW.GLFW_KEY_RIGHT_SHIFT)){
-				Component title = Component.translatable("desc.immersivepetroleum.info.projector.holdshift.text").withStyle(ChatFormatting.DARK_AQUA);
+				Component title = new TranslatableComponent("desc.immersivepetroleum.info.projector.holdshift.text").withStyle(ChatFormatting.DARK_AQUA);
 				tooltip.add(title);
 				
-				Component mbSize = Component.translatable("desc.immersivepetroleum.info.projector.size", size.getX(), size.getY(), size.getZ()).withStyle(ChatFormatting.DARK_GRAY);
+				Component mbSize = new TranslatableComponent("desc.immersivepetroleum.info.projector.size", size.getX(), size.getY(), size.getZ()).withStyle(ChatFormatting.DARK_GRAY);
 				tooltip.add(indent(mbSize));
 				
 				Direction dir = Direction.from2DDataValue(settings.getRotation().ordinal());
-				Component rotation = Component.translatable("desc.immersivepetroleum.info.projector.rotated." + dir).withStyle(ChatFormatting.DARK_GRAY);
+				Component rotation = new TranslatableComponent("desc.immersivepetroleum.info.projector.rotated." + dir).withStyle(ChatFormatting.DARK_GRAY);
 				
 				Component flip;
 				if(settings.isMirrored()){
-					flip = Component.translatable("desc.immersivepetroleum.info.projector.flipped.true").withStyle(ChatFormatting.DARK_GRAY);
+					flip = new TranslatableComponent("desc.immersivepetroleum.info.projector.flipped.true").withStyle(ChatFormatting.DARK_GRAY);
 				}else{
-					flip = Component.translatable("desc.immersivepetroleum.info.projector.flipped.false").withStyle(ChatFormatting.DARK_GRAY);
+					flip = new TranslatableComponent("desc.immersivepetroleum.info.projector.flipped.false").withStyle(ChatFormatting.DARK_GRAY);
 				}
 				
 				if(settings.getPos() != null){
@@ -149,46 +149,46 @@ public class ProjectorItem extends IPItemBase implements IUpgradeableTool{
 					int y = settings.getPos().getY();
 					int z = settings.getPos().getZ();
 					
-					Component centerText = Component.translatable("desc.immersivepetroleum.info.projector.center", x, y, z).withStyle(ChatFormatting.DARK_GRAY);
+					Component centerText = new TranslatableComponent("desc.immersivepetroleum.info.projector.center", x, y, z).withStyle(ChatFormatting.DARK_GRAY);
 					tooltip.add(indent(centerText));
 				}
 				
 				tooltip.add(indent(rotation));
 				tooltip.add(indent(flip));
 			}else{
-				Component text = Component.literal("[")
-						.append(Component.translatable("desc.immersivepetroleum.info.projector.holdshift"))
+				Component text = new TextComponent("[")
+						.append(new TranslatableComponent("desc.immersivepetroleum.info.projector.holdshift"))
 						.append("] ")
-						.append(Component.translatable("desc.immersivepetroleum.info.projector.holdshift.text"))
+						.append(new TranslatableComponent("desc.immersivepetroleum.info.projector.holdshift.text"))
 						.withStyle(ChatFormatting.DARK_AQUA);
 				tooltip.add(text);
 			}
 			
 			if(isPressing(GLFW.GLFW_KEY_LEFT_CONTROL) || isPressing(GLFW.GLFW_KEY_RIGHT_CONTROL)){
-				Component title = Component.translatable("desc.immersivepetroleum.info.projector.holdctrl.text").withStyle(ChatFormatting.DARK_PURPLE);
-				Component ctrl0 = Component.translatable("desc.immersivepetroleum.info.projector.control1").withStyle(ChatFormatting.DARK_GRAY);
-				Component ctrl1 = Component.translatable("desc.immersivepetroleum.info.projector.control2", ClientInputHandler.keybind_preview_flip.getTranslatedKeyMessage()).withStyle(ChatFormatting.DARK_GRAY);
-				Component ctrl2 = Component.translatable("desc.immersivepetroleum.info.projector.control3").withStyle(ChatFormatting.DARK_GRAY);
+				Component title = new TranslatableComponent("desc.immersivepetroleum.info.projector.holdctrl.text").withStyle(ChatFormatting.DARK_PURPLE);
+				Component ctrl0 = new TranslatableComponent("desc.immersivepetroleum.info.projector.control1").withStyle(ChatFormatting.DARK_GRAY);
+				Component ctrl1 = new TranslatableComponent("desc.immersivepetroleum.info.projector.control2", ClientInputHandler.keybind_preview_flip.getTranslatedKeyMessage()).withStyle(ChatFormatting.DARK_GRAY);
+				Component ctrl2 = new TranslatableComponent("desc.immersivepetroleum.info.projector.control3").withStyle(ChatFormatting.DARK_GRAY);
 				
 				tooltip.add(title);
 				tooltip.add(indent(ctrl0));
 				tooltip.add(indent(ctrl1));
 				tooltip.add(indent(ctrl2));
 			}else{
-				Component text = Component.literal("[")
-						.append(Component.translatable("desc.immersivepetroleum.info.projector.holdctrl"))
+				Component text = new TextComponent("[")
+						.append(new TranslatableComponent("desc.immersivepetroleum.info.projector.holdctrl"))
 						.append("] ")
-						.append(Component.translatable("desc.immersivepetroleum.info.projector.holdctrl.text"))
+						.append(new TranslatableComponent("desc.immersivepetroleum.info.projector.holdctrl.text"))
 						.withStyle(ChatFormatting.DARK_PURPLE);
 				tooltip.add(text);
 			}
 		}else{
-			tooltip.add(Component.translatable("desc.immersivepetroleum.info.projector.noMultiblock"));
+			tooltip.add(new TranslatableComponent("desc.immersivepetroleum.info.projector.noMultiblock"));
 		}
 	}
 	
 	private Component indent(Component text){
-		return Component.literal("  ").append(text);
+		return new TextComponent("  ").append(text);
 	}
 	
 	/** Find the key that is being pressed while minecraft is in focus */
@@ -220,7 +220,7 @@ public class ProjectorItem extends IPItemBase implements IUpgradeableTool{
 	
 	@Override
 	public void fillItemCategory(@Nonnull CreativeModeTab group, @Nonnull NonNullList<ItemStack> items){
-		if(this.allowedIn(group)){
+		if(this.allowdedIn(group)){
 			items.add(new ItemStack(this, 1));
 		}
 	}
@@ -623,7 +623,7 @@ public class ProjectorItem extends IPItemBase implements IUpgradeableTool{
 				state = renderEvent.getState();
 				state.updateNeighbourShapes(realWorld, rInfo.tPos, 3);
 				
-				ModelData modelData = ModelData.EMPTY;
+				IModelData modelData = EmptyModelData.INSTANCE;
 				BlockEntity te = rInfo.templateWorld.getBlockEntity(rInfo.tBlockInfo.pos);
 				if(te != null){
 					te.blockState = state;
@@ -634,7 +634,6 @@ public class ProjectorItem extends IPItemBase implements IUpgradeableTool{
 				switch(blockrendertype){
 					case MODEL -> {
 						BakedModel ibakedmodel = dispatcher.getBlockModel(state);
-
 						int i = blockColors.getColor(state, null, null, 0);
 						float red = (i >> 16 & 0xFF) / 255F;
 						float green = (i >> 8 & 0xFF) / 255F;
@@ -643,14 +642,10 @@ public class ProjectorItem extends IPItemBase implements IUpgradeableTool{
 						modelData = ibakedmodel.getModelData(rInfo.templateWorld, rInfo.tBlockInfo.pos, state, modelData);
 						
 						IPShaders.projNoise(flicker * alpha, MCUtil.getPlayer().tickCount + partialTicks);
-
-
+						
 						VertexConsumer vc = buffer.getBuffer(IPRenderTypes.PROJECTION);
 						//vc = buffer.getBuffer(RenderType.translucent());
-
-						blockRenderer.renderModel(matrix.last(), vc, state, ibakedmodel, red, green, blue, 0xF000F0, OverlayTexture.NO_OVERLAY, modelData, null);
-
-
+						blockRenderer.renderModel(matrix.last(), vc, state, ibakedmodel, red, green, blue, 0xF000F0, OverlayTexture.NO_OVERLAY, modelData);
 					}
 					case ENTITYBLOCK_ANIMATED -> {
 						ItemStack stack = new ItemStack(state.getBlock());
@@ -722,7 +717,7 @@ public class ProjectorItem extends IPItemBase implements IUpgradeableTool{
 	
 	/** Client Input Stuff */
 	@OnlyIn(Dist.CLIENT)
-	@Mod.EventBusSubscriber(value = Dist.CLIENT)
+	@Mod.EventBusSubscriber(modid = ImmersivePetroleum.MODID, value = Dist.CLIENT)
 	public static class ClientInputHandler{
 		public static final KeyMapping keybind_preview_flip = new KeyMapping("key.immersivepetroleum.projector.flip", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_M, "key.categories.immersivepetroleum");
 		
@@ -740,7 +735,7 @@ public class ProjectorItem extends IPItemBase implements IUpgradeableTool{
 		}
 		
 		@SubscribeEvent
-		public static void onMouseScrolled(InputEvent.MouseScrollingEvent event){
+		public static void handleScroll(InputEvent.MouseScrollEvent event){
 			double delta = event.getScrollDelta();
 			
 			if(shiftHeld && delta != 0.0){
@@ -767,7 +762,7 @@ public class ProjectorItem extends IPItemBase implements IUpgradeableTool{
 						settings.sendPacketToServer(main ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
 						
 						Direction facing = Direction.from2DDataValue(settings.getRotation().ordinal());
-						player.displayClientMessage(Component.translatable("desc.immersivepetroleum.info.projector.rotated." + facing), true);
+						player.displayClientMessage(new TranslatableComponent("desc.immersivepetroleum.info.projector.rotated." + facing), true);
 						
 						event.setCanceled(true);
 					}
@@ -776,7 +771,7 @@ public class ProjectorItem extends IPItemBase implements IUpgradeableTool{
 		}
 		
 		@SubscribeEvent
-		public static void onKeyPressed(InputEvent.Key event){
+		public static void handleKey(InputEvent.KeyInputEvent event){
 			if(event.getKey() == GLFW.GLFW_KEY_RIGHT_SHIFT || event.getKey() == GLFW.GLFW_KEY_LEFT_SHIFT){
 				switch(event.getAction()){
 					case GLFW.GLFW_PRESS -> {
@@ -807,9 +802,9 @@ public class ProjectorItem extends IPItemBase implements IUpgradeableTool{
 				
 				Component flip;
 				if(settings.isMirrored()){
-					flip = Component.translatable("desc.immersivepetroleum.info.projector.flipped.true");
+					flip = new TranslatableComponent("desc.immersivepetroleum.info.projector.flipped.true");
 				}else{
-					flip = Component.translatable("desc.immersivepetroleum.info.projector.flipped.false");
+					flip = new TranslatableComponent("desc.immersivepetroleum.info.projector.flipped.false");
 				}
 				player.displayClientMessage(flip, true);
 			}
@@ -862,7 +857,7 @@ public class ProjectorItem extends IPItemBase implements IUpgradeableTool{
 	public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag nbt){
 		if(!stack.isEmpty()){
 			return new IPItemStackHandler(0){
-				private final LazyOptional<ShaderWrapper_Item> shaders = CapabilityUtils.constantOptional(new ShaderWrapper_Item(ForgeRegistries.ITEMS.getKey(ProjectorItem.this), stack));
+				private final LazyOptional<ShaderWrapper_Item> shaders = CapabilityUtils.constantOptional(new ShaderWrapper_Item(getRegistryName(), stack));
 				
 				@Override
 				public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction facing){

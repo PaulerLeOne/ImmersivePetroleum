@@ -12,7 +12,6 @@ import blusunrize.immersiveengineering.api.crafting.builders.IEFinishedRecipe;
 import flaxbeard.immersivepetroleum.common.crafting.Serializers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class ReservoirBuilder extends IEFinishedRecipe<ReservoirBuilder>{
 	private String fluid;
@@ -86,7 +85,7 @@ public class ReservoirBuilder extends IEFinishedRecipe<ReservoirBuilder>{
 	 * @return {@link ReservoirBuilder}
 	 */
 	public ReservoirBuilder setFluid(Fluid fluid){
-		this.fluid = ForgeRegistries.FLUIDS.getKey(fluid).toString();
+		this.fluid = fluid.getRegistryName().toString();
 		return this;
 	}
 	

@@ -11,8 +11,8 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix4f;
 
 import flaxbeard.immersivepetroleum.client.utils.MCUtil;
+import flaxbeard.immersivepetroleum.common.blocks.tileentities.DerrickTileEntity;
 import flaxbeard.immersivepetroleum.common.cfg.IPClientConfig;
-import flaxbeard.immersivepetroleum.common.gui.DerrickContainer;
 import flaxbeard.immersivepetroleum.common.util.ResourceUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -24,15 +24,14 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ColumnPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.material.MaterialColor;
-import org.checkerframework.checker.units.qual.C;
 
 public class PipeConfig extends Button{
 	static final Button.OnPress NO_ACTION = b -> {
@@ -59,12 +58,12 @@ public class PipeConfig extends Button{
 	protected ColumnPos tilePos;
 	protected int gridWidthScaled, gridHeightScaled;
 	protected int gridScale;
-	public PipeConfig(DerrickContainer.DerrickData data, int x, int y, int width, int height, int gridWidth, int gridHeight, int gridScale){
-		super(x, y, width, height, CommonComponents.EMPTY, NO_ACTION);
-		this.tilePos = new ColumnPos(data.getBlockPos().getX(), data.getBlockPos().getZ());
+	public PipeConfig(DerrickTileEntity tile, int x, int y, int width, int height, int gridWidth, int gridHeight, int gridScale){
+		super(x, y, width, height, TextComponent.EMPTY, NO_ACTION);
+		this.tilePos = new ColumnPos(tile.getBlockPos());
 		
 		this.grid = new Grid(gridWidth, gridHeight);
-		copyGridFrom(data.gridStorage.get());
+		copyGridFrom(tile.gridStorage);
 		this.gridWidthScaled = gridWidth * gridScale;
 		this.gridHeightScaled = gridHeight * gridScale;
 		this.gridScale = Mth.clamp(gridScale, 1, Integer.MAX_VALUE);
@@ -83,8 +82,8 @@ public class PipeConfig extends Button{
 		updateTexture();
 	}
 	
-	public void reset(DerrickContainer.DerrickData data){
-		copyGridFrom(data.gridStorage.get());
+	public void reset(DerrickTileEntity tile){
+		copyGridFrom(tile.gridStorage);
 		updateTexture();
 	}
 	
@@ -124,14 +123,14 @@ public class PipeConfig extends Button{
 							int px = gx - (this.grid.getWidth() / 2);
 							int py = gy - (this.grid.getHeight() / 2);
 							
-							ColumnPos c = new ColumnPos(this.tilePos.x() + px, this.tilePos.z() + py);
-							int y = world.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, new BlockPos(c.x(), 0, c.z())).getY();
+							ColumnPos c = new ColumnPos(this.tilePos.x + px, this.tilePos.z + py);
+							int y = world.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, new BlockPos(c.x, 0, c.z)).getY();
 							
 							BlockPos p;
 							BlockState state;
 							do{
 								--y;
-								p = new BlockPos(c.x(), y, c.z());
+								p = new BlockPos(c.x, y, c.z);
 								state = world.getBlockState(p);
 							}while(state.getMapColor(world, p) == MaterialColor.NONE && y > 0);
 							
@@ -191,7 +190,7 @@ public class PipeConfig extends Button{
 			int py = y - (this.grid.getHeight() / 2);
 			
 			if((px >= -2 && px <= 2) && (py >= -2 && py <= 2)){
-				tooltip.add(Component.literal("Center (Derrick)"));
+				tooltip.add(new TextComponent("Center (Derrick)"));
 			}else{
 				String dir = "";
 				if(py < 0){
@@ -211,20 +210,20 @@ public class PipeConfig extends Button{
 					}
 				}
 				
-				tooltip.add(Component.literal("§n" + dir));
+				tooltip.add(new TextComponent("§n" + dir));
 			}
 			
-			tooltip.add(Component.literal(String.format(Locale.ENGLISH, "X: %d §7(%d)", (this.tilePos.x() + px), px)));
-			tooltip.add(Component.literal(String.format(Locale.ENGLISH, "Z: %d §7(%d)", (this.tilePos.z() + py), py)));
+			tooltip.add(new TextComponent(String.format(Locale.ENGLISH, "X: %d §7(%d)", (this.tilePos.x + px), px)));
+			tooltip.add(new TextComponent(String.format(Locale.ENGLISH, "Z: %d §7(%d)", (this.tilePos.z + py), py)));
 			
 			int i = this.grid.get(x, y);
 			if(i > EMPTY){
 				if(i == PIPE_NORMAL){
-					tooltip.add(Component.literal("Normal Pipe"));
+					tooltip.add(new TextComponent("Normal Pipe"));
 				}else if(i == PIPE_PERFORATED){
-					tooltip.add(Component.literal("Perforated Pipe"));
+					tooltip.add(new TextComponent("Perforated Pipe"));
 				}else if(i == PIPE_PERFORATED_FIXED){
-					tooltip.add(Component.literal("Perforated Pipe §c(Fixed)§r"));
+					tooltip.add(new TextComponent("Perforated Pipe §c(Fixed)§r"));
 				}
 			}
 			
@@ -367,10 +366,6 @@ public class PipeConfig extends Button{
 		public int getHeight(){
 			return this.height;
 		}
-
-		public byte[] getArray(){return array;} //Needed to create array get and set methods for derrick data broadcast. There's probably a cleaner way to make this
-
-		public void setArray(byte[] array){if(array.length == width*height)this.array = array;}
 		
 		public int size(){
 			return this.array.length;

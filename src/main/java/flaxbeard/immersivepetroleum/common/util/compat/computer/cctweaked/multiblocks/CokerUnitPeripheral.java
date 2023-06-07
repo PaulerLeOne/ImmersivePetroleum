@@ -10,7 +10,6 @@ import flaxbeard.immersivepetroleum.common.blocks.tileentities.CokerUnitTileEnti
 import flaxbeard.immersivepetroleum.common.util.compat.computer.cctweaked.CCTUtils;
 import flaxbeard.immersivepetroleum.common.util.compat.computer.cctweaked.multiblocks.generic.PoweredMultiblockPeripheral;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class CokerUnitPeripheral extends PoweredMultiblockPeripheral{
 	CokerUnitTileEntity master;
@@ -40,7 +39,7 @@ public class CokerUnitPeripheral extends PoweredMultiblockPeripheral{
 		Map<String, Object> map = new HashMap<>();
 		
 		{
-			ResourceLocation rl = ForgeRegistries.ITEMS.getKey(chamber.getInputItem().getItem());
+			ResourceLocation rl = chamber.getInputItem().getItem().getRegistryName();
 			String regName = rl == null ? null : rl.toString();
 			
 			Map<String, Object> inputMap = new HashMap<>();
@@ -50,7 +49,7 @@ public class CokerUnitPeripheral extends PoweredMultiblockPeripheral{
 		}
 		
 		{
-			ResourceLocation rl = ForgeRegistries.ITEMS.getKey(chamber.getOutputItem().getItem());
+			ResourceLocation rl = chamber.getOutputItem().getItem().getRegistryName();
 			String regName = rl == null ? null : rl.toString();
 			
 			Map<String, Object> outputMap = new HashMap<>();

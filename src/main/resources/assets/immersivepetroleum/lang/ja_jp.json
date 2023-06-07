@@ -18,11 +18,11 @@
 	"block.immersivepetroleum.pumpjack": "ポンプジャック",
 	"block.immersivepetroleum.distillationtower": "蒸留塔",
 	
-	"fluid_type.immersivepetroleum.diesel": "ディーゼル",
-	"fluid_type.immersivepetroleum.crudeoil": "原油",
-	"fluid_type.immersivepetroleum.lubricant": "潤滑油",
-	"fluid_type.immersivepetroleum.gasoline": "ガソリン",
-	"fluid_type.immersivepetroleum.napalm": "ナパーム",
+	"fluid.immersivepetroleum.diesel": "ディーゼル",
+	"fluid.immersivepetroleum.crudeoil": "原油",
+	"fluid.immersivepetroleum.lubricant": "潤滑油",
+	"fluid.immersivepetroleum.gasoline": "ガソリン",
+	"fluid.immersivepetroleum.napalm": "ナパーム",
 	
 	"_comment": "################## Items ##################",
 	

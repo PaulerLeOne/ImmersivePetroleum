@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[43,)"
+loaderVersion="[39,)"
 issueTrackerURL="https://github.com/TwistedGate/ImmersivePetroleum/issues"
 license="All rights reserved"
 
@@ -17,20 +17,20 @@ license="All rights reserved"
 [[dependencies.immersivepetroleum]]
 	modId="immersiveengineering"
 	mandatory=true
-	versionRange="[1.19.2-9.2.1-163,)"
+	versionRange="[1.18.2-8.3.1-157,)"
 	ordering="BEFORE"
 	side="BOTH"
 
 [[dependencies.immersivepetroleum]]
 	modId="forge"
 	mandatory=true
-	versionRange="[43.2.0,)"
+	versionRange="[40.1.86,)"
 	ordering="NONE"
 	side="BOTH"
 
 [[dependencies.immersivepetroleum]]
 	modId="minecraft"
 	mandatory=true
-	versionRange="[1.19.2]"
+	versionRange="[1.18.2]"
 	ordering="NONE"
 	side="BOTH"

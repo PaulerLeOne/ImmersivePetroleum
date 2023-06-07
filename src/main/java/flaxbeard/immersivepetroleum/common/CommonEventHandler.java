@@ -44,27 +44,27 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.TickEvent.PlayerTickEvent;
-import net.minecraftforge.event.TickEvent.LevelTickEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.TickEvent.WorldTickEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
-import net.minecraftforge.event.level.LevelEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class CommonEventHandler{
 	@SubscribeEvent
-	public void onSave(LevelEvent.Save event){
-		if(!event.getLevel().isClientSide()){
+	public void onSave(WorldEvent.Save event){
+		if(!event.getWorld().isClientSide()){
 			IPSaveData.markDirty();
 		}
 	}
 	
 	@SubscribeEvent
-	public void onUnload(LevelEvent.Unload event){
-		if(!event.getLevel().isClientSide()){
+	public void onUnload(WorldEvent.Unload event){
+		if(!event.getWorld().isClientSide()){
 			IPSaveData.markDirty();
 			ReservoirRegionDataStorage.get().markAllDirty();
 		}
@@ -79,7 +79,7 @@ public class CommonEventHandler{
 	@SubscribeEvent
 	public void handleBoatImmunity(LivingAttackEvent event){
 		if(event.getSource() == DamageSource.LAVA || event.getSource() == DamageSource.ON_FIRE || event.getSource() == DamageSource.IN_FIRE){
-			LivingEntity entity = event.getEntity();
+			LivingEntity entity = event.getEntityLiving();
 			if(entity.getVehicle() instanceof MotorboatEntity boat){
 				if(boat.isFireproof){
 					event.setCanceled(true);
@@ -118,7 +118,7 @@ public class CommonEventHandler{
 		if(event.getEntityMounting() instanceof LivingEntity living && event.getEntityBeingMounted() instanceof MotorboatEntity boat){
 			if(event.isDismounting()){
 				if(boat.isFireproof){
-					FluidState fluidstate = event.getLevel().getBlockState(new BlockPos(boat.position().add(0.5, 0, 0.5))).getFluidState();
+					FluidState fluidstate = event.getWorldObj().getBlockState(new BlockPos(boat.position().add(0.5, 0, 0.5))).getFluidState();
 					if(fluidstate != Fluids.EMPTY.defaultFluidState() && fluidstate.is(FluidTags.LAVA)){
 						living.addEffect(new MobEffectInstance(IPEffects.ANTI_DISMOUNT_FIRE.get(), 1, 0, false, false));
 					}
@@ -128,9 +128,9 @@ public class CommonEventHandler{
 	}
 	
 	@SubscribeEvent
-	public void handleLubricatingMachinesServer(LevelTickEvent event){
+	public void handleLubricatingMachinesServer(WorldTickEvent event){
 		if(event.phase == Phase.END){
-			handleLubricatingMachines(event.level);
+			handleLubricatingMachines(event.world);
 		}
 	}
 	
@@ -188,7 +188,7 @@ public class CommonEventHandler{
 	}
 	
 	@SubscribeEvent
-	public void onEntityJoiningWorld(EntityJoinLevelEvent event){
+	public void onEntityJoiningWorld(EntityJoinWorldEvent event){
 		if(event.getEntity() instanceof Player player){
 			if(event.getEntity() instanceof FakePlayer){
 				return;
@@ -196,7 +196,7 @@ public class CommonEventHandler{
 			
 			if(IPServerConfig.MISCELLANEOUS.autounlock_recipes.get()){
 				List<Recipe<?>> l = new ArrayList<>();
-				Collection<Recipe<?>> recipes = event.getLevel().getRecipeManager().getRecipes();
+				Collection<Recipe<?>> recipes = event.getWorld().getRecipeManager().getRecipes();
 				recipes.forEach(recipe -> {
 					ResourceLocation name = recipe.getId();
 					if(name.getNamespace().equals(ImmersivePetroleum.MODID)){
@@ -211,7 +211,7 @@ public class CommonEventHandler{
 	
 	@SubscribeEvent
 	public void livingDeath(LivingDeathEvent event){
-		if(event.getEntity() instanceof Skeleton skelly && !skelly.level.isClientSide){
+		if(event.getEntityLiving() instanceof Skeleton skelly && !skelly.level.isClientSide){
 			DamageSource src = event.getSource();
 			if(src.getEntity() instanceof Player player && !player.level.isClientSide){
 				if(player.getVehicle() instanceof MotorboatEntity motorboat && !motorboat.level.isClientSide){
@@ -227,17 +227,17 @@ public class CommonEventHandler{
 	public static final Map<ResourceLocation, List<BlockPos>> toRemove = new HashMap<>();
 	
 	@SubscribeEvent
-	public void handleNapalm(LevelTickEvent event){
-		ResourceLocation d = event.level.dimension().location();
+	public void handleNapalm(WorldTickEvent event){
+		ResourceLocation d = event.world.dimension().location();
 		
 		if(event.phase == Phase.START){
 			toRemove.put(d, new ArrayList<>());
 			if(napalmPositions.get(d) != null){
 				List<BlockPos> iterate = new ArrayList<>(napalmPositions.get(d));
 				for(BlockPos position:iterate){
-					BlockState state = event.level.getBlockState(position);
+					BlockState state = event.world.getBlockState(position);
 					if(state.getBlock() instanceof LiquidBlock && state.getBlock() == IPContent.Fluids.NAPALM.block().get()){
-						NapalmFluid.processFire(IPContent.Fluids.NAPALM, event.level, position);
+						NapalmFluid.processFire(IPContent.Fluids.NAPALM, event.world, position);
 					}
 					toRemove.get(d).add(position);
 				}

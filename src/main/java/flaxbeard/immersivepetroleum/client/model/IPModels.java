@@ -1,6 +1,9 @@
 package flaxbeard.immersivepetroleum.client.model;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import flaxbeard.immersivepetroleum.ImmersivePetroleum;
@@ -9,9 +12,8 @@ import flaxbeard.immersivepetroleum.client.model.ModelLubricantPipes.Excavator;
 import flaxbeard.immersivepetroleum.client.model.ModelLubricantPipes.Pumpjack;
 import flaxbeard.immersivepetroleum.client.render.DerrickRenderer;
 import flaxbeard.immersivepetroleum.client.render.SeismicSurveyBarrelRenderer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
@@ -20,17 +22,11 @@ import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
 /** A central place for all of ImmersivePetroleums Models, including some OBJ Models */
 @Mod.EventBusSubscriber(modid = ImmersivePetroleum.MODID, value = Dist.CLIENT, bus = Bus.MOD)
 public class IPModels{
-
-	public static final List<ResourceLocation> EXTRA_MODELS = new ArrayList<>(); //This part might be a candidate for a rework
-
+	
 	@SubscribeEvent
-	public static void registerModels(ModelEvent.RegisterAdditional event){ //This part might be a candidate for a rework
+	public static void registerModelLoaders(ModelRegistryEvent event){
 		DerrickRenderer.init();
 		SeismicSurveyBarrelRenderer.init();
-
-		for(ResourceLocation model : EXTRA_MODELS){
-			event.register(model);
-		}
 	}
 	
 	@SubscribeEvent
