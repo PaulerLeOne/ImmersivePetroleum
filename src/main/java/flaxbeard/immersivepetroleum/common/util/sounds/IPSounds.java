@@ -4,22 +4,34 @@ import java.util.HashSet;
 import java.util.Set;
 
 import flaxbeard.immersivepetroleum.ImmersivePetroleum;
-import flaxbeard.immersivepetroleum.common.IPRegisters;
 import flaxbeard.immersivepetroleum.common.util.ResourceUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 
+@Mod.EventBusSubscriber(modid = ImmersivePetroleum.MODID, bus = Bus.MOD)
 public class IPSounds{
-
-	public final static RegistryObject<SoundEvent> FLARESTACK = register("flarestack_fire");
-	public final static RegistryObject<SoundEvent> PROJECTOR = register("projector");
+	static Set<SoundEvent> soundEvents = new HashSet<>();
 	
-	static RegistryObject<SoundEvent> register(String name){
+	public final static SoundEvent FLARESTACK = register("flarestack_fire");
+	public final static SoundEvent PROJECTOR = register("projector");
+	
+	static SoundEvent register(String name){
 		ResourceLocation rl = ResourceUtils.ip(name);
 		SoundEvent event = new SoundEvent(rl);
-		return IPRegisters.registerSound(name, ()->event);
+		soundEvents.add(event.setRegistryName(rl));
+		return event;
 	}
-
-	public static void forceload(){}
+	
+	@SubscribeEvent
+	public static void registerSounds(RegistryEvent.Register<SoundEvent> event){
+		ImmersivePetroleum.log.debug("Loading sounds.");
+		for(SoundEvent sound:soundEvents){
+			event.getRegistry().register(sound);
+		}
+		soundEvents.clear();
+	}
 }

@@ -52,6 +52,7 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.TagKey;
@@ -67,7 +68,8 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.client.ClientRegistry;
+import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidStack;
@@ -142,8 +144,9 @@ public class ClientProxy extends CommonProxy{
 		
 		MinecraftForge.EVENT_BUS.register(new DebugRenderHandler());
 		MinecraftForge.EVENT_BUS.register(new SeismicResultRenderer());
-
-		//Registering keybinds now works with an event. Moved to ClientEventHandler
+		
+		ProjectorItem.ClientInputHandler.keybind_preview_flip.setKeyConflictContext(KeyConflictContext.IN_GAME);
+		ClientRegistry.registerKeyBinding(ClientInputHandler.keybind_preview_flip);
 	}
 	
 	@Override
@@ -189,7 +192,7 @@ public class ClientProxy extends CommonProxy{
 		
 		transform.pushPose();
 		transform.translate(0.0F, 0.5F, 1.0F);
-		blockRenderer.getModelRenderer().renderModel(transform.last(), buffers.getBuffer(RenderType.solid()), state, model, 1.0F, 1.0F, 1.0F, -1, -1, ModelData.EMPTY, RenderType.solid());
+		blockRenderer.getModelRenderer().renderModel(transform.last(), buffers.getBuffer(RenderType.solid()), state, model, 1.0F, 1.0F, 1.0F, -1, -1, EmptyModelData.INSTANCE);
 		transform.popPose();
 	}
 	
@@ -251,7 +254,7 @@ public class ClientProxy extends CommonProxy{
 			for(TagKey<Fluid> tag:FlarestackHandler.getSet()){
 				for(Fluid fluid:ForgeRegistries.FLUIDS.getValues()){
 					if(fluid.is(tag)){
-						Component[] entry = new Component[]{Component.empty(), new FluidStack(fluid, 1).getDisplayName()};
+						Component[] entry = new Component[]{TextComponent.EMPTY, new FluidStack(fluid, 1).getDisplayName()};
 						list.add(entry);
 					}
 				}

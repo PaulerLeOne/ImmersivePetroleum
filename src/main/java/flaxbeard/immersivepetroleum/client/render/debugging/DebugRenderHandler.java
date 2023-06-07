@@ -45,6 +45,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ColumnPos;
 import net.minecraft.util.Mth;
@@ -61,10 +63,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent.Stage;
-import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
@@ -82,10 +83,10 @@ public class DebugRenderHandler{
 	}
 	
 	@SubscribeEvent
-	public void renderDebuggingOverlay(RenderGuiOverlayEvent.Post event){
+	public void renderDebuggingOverlay(RenderGameOverlayEvent.Post event){
 		Minecraft mc = Minecraft.getInstance();
 		
-		if(mc.player != null && event.getOverlay().id().equals(VanillaGuiOverlay.SUBTITLES.id())){
+		if(mc.player != null && event.getType() == RenderGameOverlayEvent.ElementType.TEXT){
 			Player player = mc.player;
 			
 			if(isHoldingDebugItem(player)){
@@ -175,7 +176,7 @@ public class DebugRenderHandler{
 								BlockPos hit = result.getBlockPos();
 								debugOut.add(0, toText("World XYZ: " + hit.getX() + ", " + hit.getY() + ", " + hit.getZ()));
 								
-								renderOverlay(event.getPoseStack(), debugOut);
+								renderOverlay(event.getMatrixStack(), debugOut);
 							}
 						}
 						case ENTITY -> {
@@ -204,7 +205,7 @@ public class DebugRenderHandler{
 									}
 								}
 								
-								renderOverlay(event.getPoseStack(), debugOut);
+								renderOverlay(event.getMatrixStack(), debugOut);
 							}
 						}
 						default -> {
@@ -324,7 +325,7 @@ public class DebugRenderHandler{
 						final List<ReservoirIsland> islands = new ArrayList<>();
 						for(int z = -1;z <= 1;z++){
 							for(int x = -1;x <= 1;x++){
-								RegionData rd = storage.getRegionData(new ColumnPos(playerRegionPos.x() + x, playerRegionPos.z() + z));
+								RegionData rd = storage.getRegionData(new ColumnPos(playerRegionPos.x + x, playerRegionPos.z + z));
 								if(rd != null){
 									synchronized(rd.getReservoirIslandList()){
 										islands.addAll(rd.getReservoirIslandList().get(dimKey));
@@ -384,8 +385,8 @@ public class DebugRenderHandler{
 													ColumnPos b = poly.get(i);
 													float f = i / (float) poly.size();
 													
-													builder.vertex(mat, a.x() + .5F, y, a.z() + .5F).color(f, 0.0F, 1 - f, 0.5F).normal(nor, 0F, 1F, 0F).endVertex();
-													builder.vertex(mat, b.x() + .5F, y, b.z() + .5F).color(f, 0.0F, 1 - f, 0.5F).normal(nor, 0F, 1F, 0F).endVertex();
+													builder.vertex(mat, a.x + .5F, y, a.z + .5F).color(f, 0.0F, 1 - f, 0.5F).normal(nor, 0F, 1F, 0F).endVertex();
+													builder.vertex(mat, b.x + .5F, y, b.z + .5F).color(f, 0.0F, 1 - f, 0.5F).normal(nor, 0F, 1F, 0F).endVertex();
 													
 													j = i;
 												}
@@ -555,10 +556,10 @@ public class DebugRenderHandler{
 	}
 	
 	static MutableComponent toText(String string){
-		return Component.literal(string);
+		return new TextComponent(string);
 	}
 	
 	static MutableComponent toTranslation(String translationKey, Object... args){
-		return Component.translatable(translationKey, args);
+		return new TranslatableComponent(translationKey, args);
 	}
 }

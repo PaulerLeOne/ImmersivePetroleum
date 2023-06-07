@@ -10,6 +10,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
@@ -43,7 +44,7 @@ public abstract class IPRecipeCategory<T> implements IRecipeCategory<T>{
 	@Override
 	@Nonnull
 	public Component getTitle(){
-		return Component.translatable(this.localizedName);
+		return new TranslatableComponent(this.localizedName);
 	}
 	
 	@Override

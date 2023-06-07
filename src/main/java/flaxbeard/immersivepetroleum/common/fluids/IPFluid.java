@@ -9,8 +9,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.fluids.FluidType;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 
@@ -39,6 +37,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -46,55 +45,67 @@ public class IPFluid extends FlowingFluid{
 	public static final List<IPFluidEntry> FLUIDS = new ArrayList<>();
 	
 	protected final IPFluidEntry entry;
-
-	public IPFluid(IPFluidEntry entry){
+	protected final ResourceLocation stillTexture;
+	protected final ResourceLocation flowingTexture;
+	@Nullable
+	protected final Consumer<FluidAttributes.Builder> buildAttributes;
+	
+	public IPFluid(IPFluidEntry entry, int density, int viscosity, boolean isGas){
+		this(entry, builder -> {
+			builder.viscosity(viscosity).density(density);
+			if(isGas)
+				builder.gaseous();
+		});
+	}
+	
+	protected IPFluid(IPFluidEntry entry, Consumer<FluidAttributes.Builder> attributeBuilder){
+		this(entry,
+				ResourceUtils.ip("block/fluid/" + entry.name + "_still"),
+				ResourceUtils.ip("block/fluid/" + entry.name + "_flow"), attributeBuilder);
+	}
+	
+	protected IPFluid(IPFluidEntry entry, ResourceLocation stillTexture, ResourceLocation flowingTexture, @Nullable Consumer<FluidAttributes.Builder> buildAttributes){
+		this(entry, stillTexture, flowingTexture, buildAttributes, true);
+	}
+	
+	protected IPFluid(IPFluidEntry entry, ResourceLocation stillTexture, ResourceLocation flowingTexture, @Nullable Consumer<FluidAttributes.Builder> buildAttributes, boolean isSource){
 		this.entry = entry;
+		this.stillTexture = stillTexture;
+		this.flowingTexture = flowingTexture;
+		this.buildAttributes = buildAttributes;
 	}
 	
-	public static IPFluidEntry makeFluid(String name, Function<IPFluidEntry, IPFluid> factory, Consumer<FluidType.Properties> buildAtrributes){
-		return makeFluid(name, factory, buildAtrributes, IPFluidBlock::new);
+	public static IPFluidEntry makeFluid(String name, Function<IPFluidEntry, IPFluid> factory){
+		return makeFluid(name, factory, IPFluidBlock::new);
 	}
 	
-	public static IPFluidEntry makeFluid(String name, Function<IPFluidEntry, IPFluid> factory, Consumer<FluidType.Properties> buildAtrributes, Function<IPFluidEntry, Block> blockFactory){
+	public static IPFluidEntry makeFluid(String name, Function<IPFluidEntry, IPFluid> factory, Function<IPFluidEntry, Block> blockFactory){
 		Mutable<IPFluidEntry> entry = new MutableObject<>();
-
-		FluidType.Properties builder =  FluidType.Properties.create();
-		buildAtrributes.accept(builder);
 		
 		entry.setValue(new IPFluidEntry(
 				name,
 				IPRegisters.registerFluid(name, () -> factory.apply(entry.getValue())),
 				IPRegisters.registerFluid(name+"_flowing", () -> new IPFluidFlowing(entry.getValue().still.get())),
 				IPRegisters.registerBlock(name, () -> blockFactory.apply(entry.getValue())),
-				IPRegisters.registerItem(name+"_bucket", () -> new IPBucketItem(entry.getValue().still())),
-				IPRegisters.registerFluidType(name, () -> {return new FluidType(builder){
-					@Override
-					public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
-						consumer.accept(
-								new IClientFluidTypeExtensions() {
-									@Override
-									public ResourceLocation getStillTexture() {
-										return new ResourceLocation(ImmersivePetroleum.MODID, "block/fluid/"+name+"_still");
-									}
-									@Override
-									public ResourceLocation getFlowingTexture() {
-										return new ResourceLocation(ImmersivePetroleum.MODID,"block/fluid/"+name+"_flow");
-									}
-								}
-						);
-					}
-				};
-				})
+				IPRegisters.registerItem(name+"_bucket", () -> new IPBucketItem(entry.getValue().still()))
 		));
 		FLUIDS.add(entry.getValue());
 		return entry.getValue();
 	}
-
+	
 	@Override
-	public FluidType getFluidType() {
-		return entry.type().get();
+	@Nonnull
+	protected FluidAttributes createAttributes(){
+		FluidAttributes.Builder builder = FluidAttributes.builder(this.stillTexture, this.flowingTexture)
+				.overlay(this.stillTexture)
+				.sound(SoundEvents.BUCKET_FILL, SoundEvents.BUCKET_EMPTY);
+		
+		if(this.buildAttributes != null)
+			this.buildAttributes.accept(builder);
+		
+		return builder.build(this);
 	}
-
+	
 	@Override
 	protected void beforeDestroyingBlock(@Nonnull LevelAccessor arg0, @Nonnull BlockPos arg1, @Nonnull BlockState arg2){
 	}
@@ -183,12 +194,12 @@ public class IPFluid extends FlowingFluid{
 		}
 		
 		@Override
-		public ItemStack getCraftingRemainingItem(ItemStack itemStack){
+		public ItemStack getContainerItem(ItemStack itemStack){
 			return new ItemStack(Items.BUCKET);
 		}
 		
 		@Override
-		public boolean hasCraftingRemainingItem(ItemStack stack){
+		public boolean hasContainerItem(ItemStack stack){
 			return true;
 		}
 		
@@ -200,7 +211,7 @@ public class IPFluid extends FlowingFluid{
 	
 	public static class IPFluidFlowing extends IPFluid{
 		public IPFluidFlowing(IPFluid source){
-			super(source.entry);
+			super(source.entry, source.stillTexture, source.flowingTexture, source.buildAttributes, false);
 			registerDefaultState(this.getStateDefinition().any().setValue(LEVEL, 7));
 		}
 		
@@ -211,14 +222,9 @@ public class IPFluid extends FlowingFluid{
 		}
 	}
 	
-	public record IPFluidEntry(String name, RegistryObject<IPFluid> still, RegistryObject<IPFluid> flowing, RegistryObject<Block> block, RegistryObject<Item> bucket, RegistryObject<FluidType> type){
+	public record IPFluidEntry(String name, RegistryObject<IPFluid> still, RegistryObject<IPFluid> flowing, RegistryObject<Block> block, RegistryObject<Item> bucket){
 		public Fluid get(){
 			return still().get();
 		}
-	}
-
-	public static Consumer<FluidType.Properties> createBuilder(int density, int viscosity)
-	{
-		return builder -> builder.viscosity(viscosity).density(density);
 	}
 }

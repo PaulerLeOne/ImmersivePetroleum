@@ -16,6 +16,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -32,10 +33,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fluids.capability.templates.FluidHandlerItemStack;
@@ -57,16 +58,16 @@ public class OilCanItem extends IPItemBase{
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public void appendHoverText(@Nonnull ItemStack stack, Level worldIn, @Nonnull List<Component> tooltip, @Nonnull TooltipFlag flagIn){
-		if(ForgeCapabilities.FLUID_HANDLER == null)
+		if(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY == null)
 			return;
 		
 		FluidUtil.getFluidContained(stack).ifPresent(fluid -> {
 			if(!fluid.isEmpty() && fluid.getAmount() > 0){
 				Component out = ((MutableComponent) fluid.getDisplayName())
-						.append(Component.translatable(": " + fluid.getAmount() + "/8000mB")).withStyle(ChatFormatting.GRAY);
+						.append(new TextComponent(": " + fluid.getAmount() + "/8000mB")).withStyle(ChatFormatting.GRAY);
 				tooltip.add(out);
 			}else{
-				tooltip.add(Component.translatable(I18n.get(Lib.DESC_FLAVOUR + "drill.empty")));
+				tooltip.add(new TextComponent(I18n.get(Lib.DESC_FLAVOUR + "drill.empty")));
 			}
 		});
 	}
@@ -83,7 +84,7 @@ public class OilCanItem extends IPItemBase{
 		if(!world.isClientSide){
 			BlockEntity tileEntity = world.getBlockEntity(pos);
 			if(tileEntity != null){
-				IFluidHandler cap = tileEntity.getCapability(ForgeCapabilities.FLUID_HANDLER).orElse(null);
+				IFluidHandler cap = tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).orElse(null);
 				
 				if(cap != null && FluidUtil.interactWithFluidHandler(player, hand, cap)){
 					return InteractionResult.SUCCESS;
@@ -149,14 +150,14 @@ public class OilCanItem extends IPItemBase{
 		}else
 			return InteractionResult.FAIL;
 	}
-
+	
 	@Override
-	public boolean hasCraftingRemainingItem(ItemStack stack){
+	public boolean hasContainerItem(ItemStack stack){
 		return ItemNBTHelper.hasKey(stack, "jerrycanDrain") || FluidUtil.getFluidContained(stack).isPresent();
 	}
-
+	
 	@Override
-	public ItemStack getCraftingRemainingItem(ItemStack stack){
+	public ItemStack getContainerItem(ItemStack stack){
 		if(ItemNBTHelper.hasKey(stack, "jerrycanDrain")){
 			ItemStack ret = stack.copy();
 			FluidUtil.getFluidHandler(ret).ifPresent(handler -> {

@@ -17,10 +17,9 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.client.model.generators.ModelBuilder;
 import net.minecraftforge.client.model.generators.ModelProvider;
-import net.minecraftforge.client.model.generators.loaders.DynamicFluidContainerModelBuilder;
-import net.minecraftforge.client.model.generators.loaders.ObjModelBuilder;
+import net.minecraftforge.client.model.generators.loaders.DynamicBucketModelBuilder;
+import net.minecraftforge.client.model.generators.loaders.OBJLoaderBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class IPItemModels extends ModelProvider<TRSRModelBuilder>{
 	public IPItemModels(DataGenerator gen, ExistingFileHelper exHelper){
@@ -253,13 +252,13 @@ public class IPItemModels extends ModelProvider<TRSRModelBuilder>{
 	}
 	
 	private TRSRModelBuilder obj(ItemLike item, String model){
-		return getBuilder(ForgeRegistries.ITEMS.getKey(item.asItem()).toString())
-				.customLoader(ObjModelBuilder::begin)
+		return getBuilder(item.asItem().getRegistryName().toString())
+				.customLoader(OBJLoaderBuilder::begin)
 				.modelLocation(modLoc("models/" + model)).flipV(true).end();
 	}
 	
 	private IEOBJBuilder<TRSRModelBuilder> objIELoader(ItemLike item, String model){
-		return getBuilder(ForgeRegistries.ITEMS.getKey(item.asItem()).toString())
+		return getBuilder(item.asItem().getRegistryName().toString())
 				.customLoader(IEOBJBuilder::begin)
 				.modelLocation(modLoc("models/" + model));
 	}
@@ -278,12 +277,12 @@ public class IPItemModels extends ModelProvider<TRSRModelBuilder>{
 	}
 	
 	private void createBucket(Fluid f){
-		withExistingParent(ForgeRegistries.ITEMS.getKey(f.getBucket().asItem()).getPath(), ResourceUtils.forge("item/bucket"))
-			.customLoader(DynamicFluidContainerModelBuilder::begin)
+		withExistingParent(f.getBucket().asItem().getRegistryName().getPath(), ResourceUtils.forge("item/bucket"))
+			.customLoader(DynamicBucketModelBuilder::begin)
 			.fluid(f);
 	}
 	
 	private String name(ItemLike item){
-		return ForgeRegistries.ITEMS.getKey(item.asItem()).getPath();
+		return item.asItem().getRegistryName().getPath();
 	}
 }

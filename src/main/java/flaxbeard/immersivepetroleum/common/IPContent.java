@@ -1,9 +1,5 @@
 package flaxbeard.immersivepetroleum.common;
 
-import flaxbeard.immersivepetroleum.client.particle.FluidParticleData;
-import flaxbeard.immersivepetroleum.common.util.sounds.IPSounds;
-import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -80,6 +76,8 @@ import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
@@ -115,20 +113,20 @@ public class IPContent{
 	}
 	
 	public static class Fluids{
-		public static final IPFluidEntry CRUDEOIL = IPFluid.makeFluid("crudeoil", CrudeOilFluid::new, IPFluid.createBuilder(1000, 2550));
-		public static final IPFluidEntry DIESEL_SULFUR = IPFluid.makeFluid("diesel_sulfur", DieselFluid::new, IPFluid.createBuilder(789, 1750));
-		public static final IPFluidEntry DIESEL = IPFluid.makeFluid("diesel", DieselFluid::new, IPFluid.createBuilder(789, 1750));
-		public static final IPFluidEntry LUBRICANT = IPFluid.makeFluid("lubricant", e -> new IPFluid(e), IPFluid.createBuilder(925, 1000));
-		public static final IPFluidEntry GASOLINE = IPFluid.makeFluid("gasoline", e -> new IPFluid(e), IPFluid.createBuilder(789, 1200));
+		public static final IPFluidEntry CRUDEOIL = IPFluid.makeFluid("crudeoil", CrudeOilFluid::new);
+		public static final IPFluidEntry DIESEL_SULFUR = IPFluid.makeFluid("diesel_sulfur", DieselFluid::new);
+		public static final IPFluidEntry DIESEL = IPFluid.makeFluid("diesel", DieselFluid::new);
+		public static final IPFluidEntry LUBRICANT = IPFluid.makeFluid("lubricant", e -> new IPFluid(e, 925, 1000, false));
+		public static final IPFluidEntry GASOLINE = IPFluid.makeFluid("gasoline", e -> new IPFluid(e, 789, 1200, false));
 		
-		public static final IPFluidEntry NAPHTHA = IPFluid.makeFluid("naphtha", e -> new IPFluid(e), IPFluid.createBuilder(750, 750));
-		public static final IPFluidEntry NAPHTHA_CRACKED = IPFluid.makeFluid("naphtha_cracked", e -> new IPFluid(e), IPFluid.createBuilder(750, 750));
-		public static final IPFluidEntry BENZENE = IPFluid.makeFluid("benzene", e -> new IPFluid(e), IPFluid.createBuilder(876, 700));
-		public static final IPFluidEntry PROPYLENE = IPFluid.makeFluid("propylene", e -> new IPFluid(e), IPFluid.createBuilder(2, 1)); // Propylene and ethylene have lost the gaseous attribute if that even meant something
-		public static final IPFluidEntry ETHYLENE = IPFluid.makeFluid("ethylene", e -> new IPFluid(e), IPFluid.createBuilder(1, 1));
-		public static final IPFluidEntry LUBRICANT_CRACKED = IPFluid.makeFluid("lubricant_cracked", e -> new IPFluid(e), IPFluid.createBuilder(925, 1000));
-		public static final IPFluidEntry KEROSENE = IPFluid.makeFluid("kerosene", e -> new IPFluid(e), IPFluid.createBuilder(810, 900));
-		public static final IPFluidEntry GASOLINE_ADDITIVES = IPFluid.makeFluid("gasoline_additives", e -> new IPFluid(e), IPFluid.createBuilder(800, 900));
+		public static final IPFluidEntry NAPHTHA = IPFluid.makeFluid("naphtha", e -> new IPFluid(e, 750, 750, false));
+		public static final IPFluidEntry NAPHTHA_CRACKED = IPFluid.makeFluid("naphtha_cracked", e -> new IPFluid(e, 750, 750, false));
+		public static final IPFluidEntry BENZENE = IPFluid.makeFluid("benzene", e -> new IPFluid(e, 876, 700, false));
+		public static final IPFluidEntry PROPYLENE = IPFluid.makeFluid("propylene", e -> new IPFluid(e, 2, 1, true));
+		public static final IPFluidEntry ETHYLENE = IPFluid.makeFluid("ethylene", e -> new IPFluid(e, 1, 1, true));
+		public static final IPFluidEntry LUBRICANT_CRACKED = IPFluid.makeFluid("lubricant_cracked", e -> new IPFluid(e, 925, 1000, false));
+		public static final IPFluidEntry KEROSENE = IPFluid.makeFluid("kerosene", e -> new IPFluid(e, 810, 900, false));
+		public static final IPFluidEntry GASOLINE_ADDITIVES = IPFluid.makeFluid("gasoline_additives", e -> new IPFluid(e, 800, 900, false));
 		
 		public static final IPFluidEntry NAPALM = NapalmFluid.makeFluid();
 		
@@ -184,21 +182,6 @@ public class IPContent{
 		private static void forceClassLoad(){
 		}
 	}
-
-	public static class EntityTypes{
-		public static final RegistryObject<EntityType<MotorboatEntity>> SPEEDBOAT = IPRegisters.registerEntity("speedboat", ()->MotorboatEntity.TYPE);
-
-		private static void forceClassLoad(){
-		}
-	}
-
-	public static class ParticleTypes{
-		public static final RegistryObject<SimpleParticleType> FLARE_FIRE = IPRegisters.registerParticle("flare_fire", ()-> IPParticleTypes.FLARE_FIRE);
-		public static final RegistryObject<ParticleType<FluidParticleData>> FLUID_SPILL = IPRegisters.registerParticle("fluid_spill", ()-> IPParticleTypes.FLUID_SPILL);
-
-		private static void forceClassLoad(){
-		}
-	}
 	
 	public static class BoatUpgrades{
 		public static final RegistryObject<IPUpgradeItem> REINFORCED_HULL = createBoatUpgrade("reinforced_hull");
@@ -227,9 +210,6 @@ public class IPContent{
 		IPMenuTypes.forceClassLoad();
 		Serializers.forceClassLoad();
 		IPEffects.forceClassLoad();
-		EntityTypes.forceClassLoad();
-		ParticleTypes.forceClassLoad();
-		IPSounds.forceload();
 	}
 	
 	public static void preInit(){
@@ -275,10 +255,8 @@ public class IPContent{
 		LubricatedHandler.registerLubricatedTile(ExcavatorBlockEntity.class, ExcavatorLubricationHandler::new);
 		LubricatedHandler.registerLubricatedTile(CrusherBlockEntity.class, CrusherLubricationHandler::new);
 	}
-
-	//Non-client-sided RegistryEvents no longer exist
-
-	/*@SubscribeEvent
+	
+	@SubscribeEvent
 	public static void registerEntityTypes(RegistryEvent.Register<EntityType<?>> event){
 		try{
 			event.getRegistry().register(MotorboatEntity.TYPE);
@@ -298,13 +276,14 @@ public class IPContent{
 	public static void registerParticles(RegistryEvent.Register<ParticleType<?>> event){
 		event.getRegistry().register(IPParticleTypes.FLARE_FIRE);
 		event.getRegistry().register(IPParticleTypes.FLUID_SPILL);
-	}*/
-
+	}
+	
 	@OnlyIn(Dist.CLIENT)
 	@SubscribeEvent
-	public static void registerParticleFactories(RegisterParticleProvidersEvent event){
+	public static void registerParticleFactories(ParticleFactoryRegisterEvent event){
+		ParticleEngine manager = MCUtil.getParticleEngine();
 		
-		event.register(ParticleTypes.FLARE_FIRE.get(), FlareFire.Factory::new);
-		event.register(ParticleTypes.FLUID_SPILL.get(), new FluidSpill.Factory());
+		manager.register(IPParticleTypes.FLARE_FIRE, FlareFire.Factory::new);
+		manager.register(IPParticleTypes.FLUID_SPILL, new FluidSpill.Factory());
 	}
 }

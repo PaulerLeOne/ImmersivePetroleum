@@ -16,6 +16,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 public class DerrickSettingsScreen extends Screen{
@@ -29,7 +31,7 @@ public class DerrickSettingsScreen extends Screen{
 	
 	final DerrickScreen derrickScreen;
 	public DerrickSettingsScreen(DerrickScreen derrickScreen){
-		super(Component.literal("DerrickSettings"));
+		super(new TextComponent("DerrickSettings"));
 		this.derrickScreen = derrickScreen;
 	}
 	
@@ -41,35 +43,34 @@ public class DerrickSettingsScreen extends Screen{
 		this.guiLeft = (this.width - this.xSize) / 2;
 		this.guiTop = (this.height - this.ySize) / 2;
 		
-		this.pipeConfig = new PipeConfig(this.derrickScreen.getMenu().data, this.guiLeft + 10, this.guiTop + 10, 138, 138, 69, 69, 2);
+		this.pipeConfig = new PipeConfig(this.derrickScreen.tile, this.guiLeft + 10, this.guiTop + 10, 138, 138, 69, 69, 2);
 		addRenderableWidget(this.pipeConfig);
 		
 		// IDEA Users: these lambdas are like this for readability: Don't Change Them!
-		final Component set = Component.translatable("gui.immersivepetroleum.derrick.settings.button.set");
+		final TranslatableComponent set = new TranslatableComponent("gui.immersivepetroleum.derrick.settings.button.set");
 		addRenderableWidget(new Button(this.guiLeft + (this.xSize / 2) - 65, this.guiTop + this.ySize - 25, 40, 20, set, b -> {
-			MessageDerrick.sendToServer(this.derrickScreen.getMenu().data.getBlockPos(), this.pipeConfig.getGrid());
-			derrickScreen.getMenu().data.gridStorage = ()->this.pipeConfig.getGrid();
+			MessageDerrick.sendToServer(this.derrickScreen.tile.getBlockPos(), this.pipeConfig.getGrid());
 		}, (button, matrix, mx, my) -> {
 			List<Component> list = new ArrayList<>();
-			list.add(Component.translatable("gui.immersivepetroleum.derrick.settings.button.set.desc"));
+			list.add(new TranslatableComponent("gui.immersivepetroleum.derrick.settings.button.set.desc"));
 			renderTooltip(matrix, list, Optional.empty(), mx, my);
 		}));
 		
-		final Component reset = Component.translatable("gui.immersivepetroleum.derrick.settings.button.reset");
+		final TranslatableComponent reset = new TranslatableComponent("gui.immersivepetroleum.derrick.settings.button.reset");
 		addRenderableWidget(new Button(this.guiLeft + (this.xSize / 2) - 20, this.guiTop + this.ySize - 25, 40, 20, reset, b -> {
-			this.pipeConfig.reset(this.derrickScreen.getMenu().data);
+			this.pipeConfig.reset(this.derrickScreen.tile);
 		}, (button, matrix, mx, my) -> {
 			List<Component> list = new ArrayList<>();
-			list.add(Component.translatable("gui.immersivepetroleum.derrick.settings.button.reset.desc"));
+			list.add(new TranslatableComponent("gui.immersivepetroleum.derrick.settings.button.reset.desc"));
 			renderTooltip(matrix, list, Optional.empty(), mx, my);
 		}));
 		
-		final Component close = Component.translatable("gui.immersivepetroleum.derrick.settings.button.close");
+		final TranslatableComponent close = new TranslatableComponent("gui.immersivepetroleum.derrick.settings.button.close");
 		addRenderableWidget(new Button(this.guiLeft + (this.xSize / 2) + 25, this.guiTop + this.ySize - 25, 40, 20, close, b -> {
 			DerrickSettingsScreen.this.onClose();
 		}, (button, matrix, mx, my) -> {
 			List<Component> list = new ArrayList<>();
-			list.add(Component.translatable("gui.immersivepetroleum.derrick.settings.button.close.desc"));
+			list.add(new TranslatableComponent("gui.immersivepetroleum.derrick.settings.button.close.desc"));
 			renderTooltip(matrix, list, Optional.empty(), mx, my);
 		}));
 	}

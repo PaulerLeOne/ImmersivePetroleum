@@ -55,16 +55,16 @@ public class RecipeReloadListener implements ResourceManagerReloadListener{
 		}
 		
 		ImmersivePetroleum.log.info("Loading Distillation Recipes.");
-		DistillationTowerRecipe.recipes = filterRecipes(recipes, DistillationTowerRecipe.class, IPRecipeTypes.DISTILLATION.type());
+		DistillationTowerRecipe.recipes = filterRecipes(recipes, DistillationTowerRecipe.class, IPRecipeTypes.DISTILLATION);
 		
 		ImmersivePetroleum.log.info("Loading Reservoirs.");
-		ReservoirType.map = filterRecipes(recipes, ReservoirType.class, IPRecipeTypes.RESERVOIR.type());
+		ReservoirType.map = filterRecipes(recipes, ReservoirType.class, IPRecipeTypes.RESERVOIR);
 		
 		ImmersivePetroleum.log.info("Loading Coker-Unit Recipes.");
-		CokerUnitRecipe.recipes = filterRecipes(recipes, CokerUnitRecipe.class, IPRecipeTypes.COKER.type());
+		CokerUnitRecipe.recipes = filterRecipes(recipes, CokerUnitRecipe.class, IPRecipeTypes.COKER);
 		
 		ImmersivePetroleum.log.info("Loading High-Pressure Refinery Recipes.");
-		HighPressureRefineryRecipe.recipes = filterRecipes(recipes, HighPressureRefineryRecipe.class, IPRecipeTypes.HYDROTREATER.type());
+		HighPressureRefineryRecipe.recipes = filterRecipes(recipes, HighPressureRefineryRecipe.class, IPRecipeTypes.HYDROTREATER);
 	}
 	
 	static <R extends Recipe<?>> Map<ResourceLocation, R> filterRecipes(Collection<Recipe<?>> recipes, Class<R> recipeClass, RegistryObject<RecipeType<R>> recipeType){

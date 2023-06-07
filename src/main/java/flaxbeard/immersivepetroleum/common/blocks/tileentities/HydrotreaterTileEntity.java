@@ -39,14 +39,15 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidTank;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -78,22 +79,11 @@ public class HydrotreaterTileEntity extends PoweredMultiblockBlockEntity<Hydrotr
 	/** Template-Location of the Redstone Input Port. (0 1 3)<br> */
 	public static final Set<BlockPos> Redstone_IN = ImmutableSet.of(new BlockPos(0, 1, 3));
 	
-	public final FluidTank[] tanks = makeTanks();
-
-	public static int TANK_VOLUME = 12000;
-	public static int ENERGY_CAPACITY = 8000;
-
+	public final FluidTank[] tanks = new FluidTank[]{new FluidTank(12000), new FluidTank(12000), new FluidTank(12000)};
 	public HydrotreaterTileEntity(BlockEntityType<HydrotreaterTileEntity> type, BlockPos pWorldPosition, BlockState pBlockState){
-		super(HydroTreaterMultiblock.INSTANCE, ENERGY_CAPACITY, true, type, pWorldPosition, pBlockState);
+		super(HydroTreaterMultiblock.INSTANCE, 8000, true, type, pWorldPosition, pBlockState);
 		tanks[TANK_INPUT_A].setValidator(fs -> HighPressureRefineryRecipe.hasRecipeWithInput(fs, true));
 		tanks[TANK_INPUT_B].setValidator(fs -> HighPressureRefineryRecipe.hasRecipeWithSecondaryInput(fs, true));
-	}
-
-	public static FluidTank[] makeTanks(){
-		return new FluidTank[]{
-				new FluidTank(TANK_VOLUME),
-				new FluidTank(TANK_VOLUME),
-				new FluidTank(TANK_VOLUME)};
 	}
 	
 	@Override
@@ -190,7 +180,7 @@ public class HydrotreaterTileEntity extends PoweredMultiblockBlockEntity<Hydrotr
 		
 		BlockEntity te = level.getBlockEntity(outputpos);
 		if(te != null){
-			IItemHandler handler = te.getCapability(ForgeCapabilities.ITEM_HANDLER, outputdir.getOpposite()).orElse(null);
+			IItemHandler handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, outputdir.getOpposite()).orElse(null);
 			if(handler != null){
 				output = ItemHandlerHelper.insertItem(handler, output, false);
 			}
@@ -324,7 +314,7 @@ public class HydrotreaterTileEntity extends PoweredMultiblockBlockEntity<Hydrotr
 	@Nonnull
 	@Override
 	public <C> LazyOptional<C> getCapability(@Nonnull Capability<C> capability, @Nullable Direction side){
-		if(capability == ForgeCapabilities.FLUID_HANDLER){
+		if(capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY){
 			if(this.posInMultiblock.equals(Fluid_IN_A) && (side == null || side == getFacing().getOpposite())){
 				return this.inputAHandler.getAndCast();
 			}else if(this.posInMultiblock.equals(Fluid_IN_B) && (side == null || side == Direction.UP)){

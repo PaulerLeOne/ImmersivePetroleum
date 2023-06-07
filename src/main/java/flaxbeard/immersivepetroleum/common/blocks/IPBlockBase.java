@@ -10,12 +10,10 @@ import flaxbeard.immersivepetroleum.common.blocks.ticking.IPCommonTickableTile;
 import flaxbeard.immersivepetroleum.common.blocks.ticking.IPServerTickableTile;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.RegistryObject;
 
 public class IPBlockBase extends Block{
@@ -26,11 +24,7 @@ public class IPBlockBase extends Block{
 	public Supplier<BlockItem> blockItemSupplier(){
 		return () -> new IPBlockItemBase(this, new Item.Properties().tab(ImmersivePetroleum.creativeTab));
 	}
-
-	public void onIPBlockPlacedBy(BlockPlaceContext context, BlockState state)
-	{
-	}
-
+	
 	@Nullable
 	public static <E extends BlockEntity & IPCommonTickableTile, A extends BlockEntity> BlockEntityTicker<A> createCommonTicker(boolean isClient, BlockEntityType<A> actual, RegistryObject<BlockEntityType<E>> expected){
 		return createCommonTicker(isClient, actual, expected.get());

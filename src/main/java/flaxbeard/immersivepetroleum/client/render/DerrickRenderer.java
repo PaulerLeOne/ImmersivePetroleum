@@ -5,14 +5,12 @@ import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 
-import blusunrize.immersiveengineering.api.ApiUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.PoseStack.Pose;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 
-import flaxbeard.immersivepetroleum.client.model.IPModels;
 import flaxbeard.immersivepetroleum.client.utils.MCUtil;
 import flaxbeard.immersivepetroleum.common.blocks.tileentities.DerrickTileEntity;
 import flaxbeard.immersivepetroleum.common.util.ResourceUtils;
@@ -22,7 +20,8 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.client.model.ForgeModelBakery;
+import net.minecraftforge.client.model.data.EmptyModelData;
 
 public class DerrickRenderer implements BlockEntityRenderer<DerrickTileEntity>{
 	
@@ -31,7 +30,7 @@ public class DerrickRenderer implements BlockEntityRenderer<DerrickTileEntity>{
 	
 	/* Called from ClientProxy during ModelRegistryEvent */
 	public static void init(){
-		IPModels.EXTRA_MODELS.add(DERRICK_PIPE_RL);
+		ForgeModelBakery.addSpecialModel(DERRICK_PIPE_RL);
 	}
 	
 	@Override
@@ -57,7 +56,7 @@ public class DerrickRenderer implements BlockEntityRenderer<DerrickTileEntity>{
 			
 			matrix.translate(0.5, 0.0, 0.5);
 			matrix.mulPose(new Quaternion(Y_AXIS, rot, true));
-			List<BakedQuad> quads = f.apply(DERRICK_PIPE_RL).getQuads(null, null, ApiUtils.RANDOM_SOURCE, ModelData.EMPTY, RenderType.solid()); //Why's this passing null as the rand? It shouldn't be
+			List<BakedQuad> quads = f.apply(DERRICK_PIPE_RL).getQuads(null, null, null, EmptyModelData.INSTANCE); //Why's this passing null as the rand? It shouldn't be
 			Pose last = matrix.last();
 			VertexConsumer solid = buffer.getBuffer(RenderType.solid());
 			for(BakedQuad quad:quads){

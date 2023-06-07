@@ -11,6 +11,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -201,7 +202,7 @@ public class Settings{
 		}
 		
 		public Component getTranslated(){
-			return Component.translatable(this.translation);
+			return new TranslatableComponent(this.translation);
 		}
 	}
 }

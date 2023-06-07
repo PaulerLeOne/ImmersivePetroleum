@@ -35,7 +35,6 @@ import net.minecraft.ResourceLocationException;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -56,11 +55,11 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidTank;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
@@ -74,8 +73,6 @@ public class DerrickTileEntity extends PoweredMultiblockBlockEntity<DerrickTileE
 	
 	public static FluidStack WATER = FluidStack.EMPTY;
 	public static FluidStack CONCRETE = FluidStack.EMPTY;
-
-	public static int NUM_SLOTS = 1;
 	
 	public enum Inventory{
 		/** Item Pipe Input */
@@ -100,7 +97,7 @@ public class DerrickTileEntity extends PoweredMultiblockBlockEntity<DerrickTileE
 	/** Template-Location of the Redstone Input Port. (0 1 1)<br> */
 	public static final Set<BlockPos> Redstone_IN = ImmutableSet.of(new BlockPos(0, 1, 1));
 	
-	public final FluidTank tank = new FluidTank(TANK_CAPACITY, this::acceptsFluid);
+	public final FluidTank tank = new FluidTank(8000, this::acceptsFluid);
 	
 	public final NonNullList<ItemStack> inventory = NonNullList.withSize(1, ItemStack.EMPTY);
 	public boolean drilling, spilling;
@@ -112,12 +109,9 @@ public class DerrickTileEntity extends PoweredMultiblockBlockEntity<DerrickTileE
 	/** Stores the current derrick configuration. */
 	@Nullable
 	public PipeConfig.Grid gridStorage;
-
-	public static int TANK_CAPACITY = 8000;
-	public static int ENERGY_CAPACITY = 16000;
 	
 	public DerrickTileEntity(BlockEntityType<DerrickTileEntity> type, BlockPos pWorldPosition, BlockState pBlockState){
-		super(DerrickMultiblock.INSTANCE, ENERGY_CAPACITY, true, type, pWorldPosition, pBlockState);
+		super(DerrickMultiblock.INSTANCE, 16000, true, type, pWorldPosition, pBlockState);
 	}
 	
 	@Override
@@ -155,7 +149,7 @@ public class DerrickTileEntity extends PoweredMultiblockBlockEntity<DerrickTileE
 		nbt.putBoolean("spilling", this.spilling);
 		nbt.putInt("timer", this.timer);
 		
-		nbt.putString("spillingfluid", ForgeRegistries.FLUIDS.getKey(this.fluidSpilled).toString());
+		nbt.putString("spillingfluid", this.fluidSpilled.getRegistryName().toString());
 		nbt.putInt("flow", getReservoirFlow());
 		
 		nbt.put("tank", this.tank.writeToNBT(new CompoundTag()));
@@ -435,7 +429,7 @@ public class DerrickTileEntity extends PoweredMultiblockBlockEntity<DerrickTileE
 					continue;
 				}
 				
-				extractedAmount += island.extractWithPressure(getLevelNonnull(), cPos.x(), cPos.z());
+				extractedAmount += island.extractWithPressure(getLevelNonnull(), cPos.x, cPos.z);
 			}
 		}
 		
@@ -721,7 +715,7 @@ public class DerrickTileEntity extends PoweredMultiblockBlockEntity<DerrickTileE
 	@Nonnull
 	@Override
 	public <C> LazyOptional<C> getCapability(@Nonnull Capability<C> capability, @Nullable Direction side){
-		if(capability == ForgeCapabilities.FLUID_HANDLER){
+		if(capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY){
 			if(posInMultiblock.equals(Fluid_IN) && (side == null || side == getFacing().getOpposite())){
 				return fluidInputHandler.getAndCast();
 			}

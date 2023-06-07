@@ -70,8 +70,8 @@ public class ReservoirRegionDataStorage extends SavedData{
 		ListTag list = new ListTag();
 		this.regions.forEach((key, entry) -> {
 			CompoundTag tag = new CompoundTag();
-			tag.putInt("x", key.x());
-			tag.putInt("z", key.z());
+			tag.putInt("x", key.x);
+			tag.putInt("z", key.z);
 			list.add(tag);
 		});
 		nbt.put("regions", list);
@@ -95,7 +95,7 @@ public class ReservoirRegionDataStorage extends SavedData{
 		log.debug("Loaded regions file.");
 	}
 	
-	/** Marks itself and all regions as dirty. (Only to be used by {@link CommonEventHandler#onUnload(net.minecraftforge.event.level.LevelEvent.Unload)}) */
+	/** Marks itself and all regions as dirty. (Only to be used by {@link CommonEventHandler#onUnload(net.minecraftforge.event.world.WorldEvent.Unload)}) */
 	public void markAllDirty(){
 		setDirty();
 		this.regions.values().forEach(RegionData::setDirty);
@@ -116,7 +116,9 @@ public class ReservoirRegionDataStorage extends SavedData{
 	
 	/** May only be called on the server-side. Returns null on client-side. */
 	@Nullable
-	public ReservoirIsland getIsland(Level world, BlockPos pos){return getIsland(world, new ColumnPos(pos.getX(), pos.getZ()));}
+	public ReservoirIsland getIsland(Level world, BlockPos pos){
+		return getIsland(world, new ColumnPos(pos));
+	}
 	
 	/** May only be called on the server-side. Returns null on client-side. */
 	@Nullable
@@ -175,7 +177,7 @@ public class ReservoirRegionDataStorage extends SavedData{
 	}
 	
 	private ColumnPos offset(ColumnPos in, int xOff, int zOff){
-		return new ColumnPos(in.x() + xOff, in.z() + zOff);
+		return new ColumnPos(in.x + xOff, in.z + zOff);
 	}
 	
 	/** Utility method */
@@ -187,7 +189,7 @@ public class ReservoirRegionDataStorage extends SavedData{
 	/** Utility method */
 	public ColumnPos toRegionCoords(ColumnPos pos){
 		// 9 = SectionPos.blockToSectionCoord & ChunkPos.getRegionX
-		return new ColumnPos(pos.x() >> 9, pos.z() >> 9);
+		return new ColumnPos(pos.x >> 9, pos.z >> 9);
 	}
 	
 	@Nullable
@@ -206,14 +208,14 @@ public class ReservoirRegionDataStorage extends SavedData{
 			String fn = getRegionFileName(p);
 			RegionData data = this.dimData.computeIfAbsent(t -> new RegionData(p, t), () -> new RegionData(p), fn);
 			setDirty();
-			log.debug("Created RegionData[{}, {}]", regionPos.x(), regionPos.z());
+			log.debug("Created RegionData[{}, {}]", regionPos.x, regionPos.z);
 			return data;
 		});
 		return ret;
 	}
 	
 	private String getRegionFileName(ColumnPos regionPos){
-		return DATA_NAME + File.separatorChar + regionPos.x() + "_" + regionPos.z();
+		return DATA_NAME + File.separatorChar + regionPos.x + "_" + regionPos.z;
 	}
 	
 	// -----------------------------------------------------------------------------
@@ -342,7 +344,7 @@ public class ReservoirRegionDataStorage extends SavedData{
 		
 		@Override
 		public String toString(){
-			return String.format("RegionData[%d, %d]", this.regionPos.x(), this.regionPos.z());
+			return String.format("RegionData[%d, %d]", this.regionPos.x, this.regionPos.z);
 		}
 	}
 }

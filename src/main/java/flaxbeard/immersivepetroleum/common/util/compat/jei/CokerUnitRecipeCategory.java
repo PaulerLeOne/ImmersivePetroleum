@@ -104,5 +104,16 @@ public class CokerUnitRecipeCategory extends IPRecipeCategory<CokerUnitRecipe>{
 		font.draw(matrix, text1, bWidth - 10 - font.width(text1), (bHeight / 3) + (font.lineHeight * 2), -1);
 		matrix.popPose();
 	}
-
+	
+	@Override
+	@Deprecated
+	public ResourceLocation getUid(){
+		return null;
+	}
+	
+	@Override
+	@Deprecated
+	public Class<? extends CokerUnitRecipe> getRecipeClass(){
+		return null;
+	}
 }

@@ -18,7 +18,7 @@ import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.commands.CommandFunction;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.advancements.AdvancementProvider;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
@@ -33,8 +33,8 @@ public class IPAdvancements extends AdvancementProvider{
 	protected void registerAdvancements(Consumer<Advancement> consumer, ExistingFileHelper fileHelper){
 		Advancement start = Advancement.Builder.advancement()
 			.display(IPContent.Blocks.SEISMIC_SURVEY.get(),
-				Component.translatable("advancement.immersivepetroleum.root"),
-				Component.translatable("advancement.immersivepetroleum.root.desc"),
+				new TranslatableComponent("advancement.immersivepetroleum.root"),
+				new TranslatableComponent("advancement.immersivepetroleum.root.desc"),
 				ResourceUtils.ip("textures/block/asphalt.png"),
 				FrameType.TASK, true, true, false)
 			.addCriterion("code_trigger", new ImpossibleTrigger.TriggerInstance())
@@ -161,8 +161,8 @@ public class IPAdvancements extends AdvancementProvider{
 		Advancement.Builder builder = Advancement.Builder.advancement()
 			.parent(parent)
 			.display(display,
-				Component.translatable("advancement.immersivepetroleum." + name),
-				Component.translatable("advancement.immersivepetroleum." + name + ".desc"),
+				new TranslatableComponent("advancement.immersivepetroleum." + name),
+				new TranslatableComponent("advancement.immersivepetroleum." + name + ".desc"),
 			null, frame, showToast, announceToChat, hidden);
 		return builder;
 	}
@@ -171,8 +171,8 @@ public class IPAdvancements extends AdvancementProvider{
 		Advancement.Builder builder = Advancement.Builder.advancement()
 			.parent(parent)
 			.display(display,
-				Component.translatable("advancement.immersivepetroleum." + name),
-				Component.translatable("advancement.immersivepetroleum." + name + ".desc"),
+				new TranslatableComponent("advancement.immersivepetroleum." + name),
+				new TranslatableComponent("advancement.immersivepetroleum." + name + ".desc"),
 			null, frame, showToast, announceToChat, hidden);
 		return builder;
 	}

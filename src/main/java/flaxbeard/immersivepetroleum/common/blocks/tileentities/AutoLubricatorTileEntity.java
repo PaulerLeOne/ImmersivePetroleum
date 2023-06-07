@@ -19,11 +19,12 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -33,14 +34,14 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
-public class AutoLubricatorTileEntity extends IPTileEntityBase implements IPCommonTickableTile, IEBlockInterfaces.IPlayerInteraction, IEBlockInterfaces.IBlockOverlayText, IEBlockInterfaces.IBlockEntityDrop, IEBlockInterfaces.IPlacementInteraction{
+public class AutoLubricatorTileEntity extends IPTileEntityBase implements IPCommonTickableTile, IEBlockInterfaces.IPlayerInteraction, IEBlockInterfaces.IBlockOverlayText, IEBlockInterfaces.IBlockEntityDrop, IEBlockInterfaces.IReadOnPlacement{
 	public boolean isSlave;
 	public Direction facing = Direction.NORTH;
 	public FluidTank tank = new FluidTank(8000, fluid -> (fluid != null && LubricantHandler.isValidLube(fluid.getFluid())));
@@ -96,23 +97,20 @@ public class AutoLubricatorTileEntity extends IPTileEntityBase implements IPComm
 	}
 	
 	@Override
-	public void onBEPlaced(BlockPlaceContext ctx){
-		ItemStack stack = ctx.getItemInHand();
-		Player player = ctx.getPlayer();
-
+	public void readOnPlacement(LivingEntity placer, ItemStack stack){
 		if(stack.hasTag()){
 			readTank(stack.getTag());
 		}
 		
-
-		BlockPos target = this.worldPosition.relative(this.facing);
-		BlockEntity te = this.level.getBlockEntity(target);
-
-		ILubricationHandler<BlockEntity> handler = LubricatedHandler.getHandlerForTile(te);
-		if(handler != null && handler.isPlacedCorrectly(this.level, this, this.facing) != null){
-			Utils.unlockIPAdvancement(player, "main/auto_lubricator");
+		if(placer instanceof Player player){
+			BlockPos target = this.worldPosition.relative(this.facing);
+			BlockEntity te = this.level.getBlockEntity(target);
+			
+			ILubricationHandler<BlockEntity> handler = LubricatedHandler.getHandlerForTile(te);
+			if(handler != null && handler.isPlacedCorrectly(this.level, this, this.facing) != null){
+				Utils.unlockIPAdvancement(player, "main/auto_lubricator");
+			}
 		}
-
 	}
 	
 	@Override
@@ -142,7 +140,7 @@ public class AutoLubricatorTileEntity extends IPTileEntityBase implements IPComm
 	@Override
 	@Nonnull
 	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, Direction side){
-		if(cap == ForgeCapabilities.FLUID_HANDLER){
+		if(cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY){
 			if(this.isSlave && (side == null || side == Direction.UP)){
 				AutoLubricatorTileEntity master = master();
 				if(master == null){
@@ -206,7 +204,7 @@ public class AutoLubricatorTileEntity extends IPTileEntityBase implements IPComm
 				if(!master.tank.isEmpty()){
 					s = ((MutableComponent) master.tank.getFluid().getDisplayName()).append(": " + master.tank.getFluidAmount() + "mB");
 				}else{
-					s = Component.translatable(Lib.GUI + "empty");
+					s = new TranslatableComponent(Lib.GUI + "empty");
 				}
 				return new Component[]{s};
 			}

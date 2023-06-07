@@ -12,18 +12,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
 
-public class IPSlot extends SlotItemHandler {
+public class IPSlot extends Slot{
 	private final Predicate<ItemStack> consumer;
 
-	public IPSlot(IItemHandler inventoryIn, int index, int xPosition, int yPosition){
+	public IPSlot(Container inventoryIn, int index, int xPosition, int yPosition){
 		super(inventoryIn, index, xPosition, yPosition);
 		this.consumer = null;
 	}
 	
-	public IPSlot(IItemHandler inventoryIn, int index, int xPosition, int yPosition, Predicate<ItemStack> placeCheck){
+	public IPSlot(Container inventoryIn, int index, int xPosition, int yPosition, Predicate<ItemStack> placeCheck){
 		super(inventoryIn, index, xPosition, yPosition);
 		this.consumer = placeCheck;
 	}
@@ -37,7 +35,7 @@ public class IPSlot extends SlotItemHandler {
 	}
 	
 	public static class ItemOutput extends IPSlot{
-		public ItemOutput(IItemHandler inventoryIn, int index, int xPosition, int yPosition){
+		public ItemOutput(Container inventoryIn, int index, int xPosition, int yPosition){
 			super(inventoryIn, index, xPosition, yPosition);
 		}
 		
@@ -48,7 +46,7 @@ public class IPSlot extends SlotItemHandler {
 	}
 	
 	public static class CokerInput extends IPSlot{
-		public CokerInput(AbstractContainerMenu container, IItemHandler inv, int id, int x, int y){
+		public CokerInput(AbstractContainerMenu container, Container inv, int id, int x, int y){
 			super(inv, id, x, y);
 		}
 		
@@ -60,7 +58,7 @@ public class IPSlot extends SlotItemHandler {
 	
 	public static class FluidContainer extends IPSlot{
 		FluidFilter filter;
-		public FluidContainer(IItemHandler inv, int id, int x, int y, FluidFilter filter){
+		public FluidContainer(Container inv, int id, int x, int y, FluidFilter filter){
 			super(inv, id, x, y);
 			this.filter = filter;
 		}
