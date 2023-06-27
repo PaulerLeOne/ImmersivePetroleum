@@ -37,8 +37,6 @@ import flaxbeard.immersivepetroleum.common.IPMenuTypes;
 import flaxbeard.immersivepetroleum.common.blocks.tileentities.PumpjackTileEntity;
 import flaxbeard.immersivepetroleum.common.cfg.IPServerConfig;
 import flaxbeard.immersivepetroleum.common.crafting.RecipeReloadListener;
-import flaxbeard.immersivepetroleum.common.items.ProjectorItem;
-import flaxbeard.immersivepetroleum.common.items.ProjectorItem.ClientInputHandler;
 import flaxbeard.immersivepetroleum.common.util.ResourceUtils;
 import flaxbeard.immersivepetroleum.common.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -68,7 +66,6 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.event.lifecycle.ParallelDispatchEvent;
@@ -143,7 +140,6 @@ public class ClientProxy extends CommonProxy{
 		MinecraftForge.EVENT_BUS.register(new DebugRenderHandler());
 		MinecraftForge.EVENT_BUS.register(new SeismicResultRenderer());
 
-		//Registering keybinds now works with an event. Moved to ClientEventHandler
 	}
 	
 	@Override
